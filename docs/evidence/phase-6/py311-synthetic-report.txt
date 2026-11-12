@@ -1,2 +1,1 @@
 Generated docs/case-study.md, docs/case-study.json, docs/demo-preview.svg for 2026-07-28 to 2026-10-25.
-

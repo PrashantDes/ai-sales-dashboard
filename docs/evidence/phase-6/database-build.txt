@@ -37,4 +37,3 @@
     "analytical_sha256": "b21622ae307c7f49b14a9c584e57707a8bd1840b645d0a86d56add24eae1e09d"
   }
 }
-
