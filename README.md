@@ -1,5 +1,7 @@
 # Sales Intelligence Dashboard
 
+**[Open the live demo](https://ai-sales-dashboard221.streamlit.app/)** · Start with **Generated sample (₹)**; no API key is required.
+
 A local-first sales analytics app for deciding **where to investigate revenue changes, margin pressure, and unusual trading periods**. Built with Python, Streamlit, pandas, statsmodels, and scikit-learn.
 
 All six implementation phases and the baseline gate are complete. See the [acceptance evidence](docs/evidence/README.md), [requirements](docs/PRD.md), and [reproduction instructions](docs/release-readiness.md). The latest local pre-deployment check passed **132 tests**; [GitHub Actions](https://github.com/PrashantDes/ai-sales-dashboard/actions) checks Python 3.11 and 3.12.
@@ -131,6 +133,8 @@ Only aggregates are sent, but grouped labels and business metrics may still be s
 
 ## Verification and deployment
 
+The app is deployed on [Streamlit Community Cloud](https://ai-sales-dashboard221.streamlit.app/). Public, signed-out access and the generated-sample Overview were verified on 2026-11-12. Other hosted tabs, CSV uploads and the historical SQL view still require a complete live smoke test.
+
 Tests cover generator edge cases, validation and cleaning, forecast baselines and leakage, business finding arithmetic, provider contracts, partial streaming failures, and Streamlit navigation/upload flows. CI runs tests and a dependency audit on Python 3.11 and 3.12.
 
 For a first demo deployment on Streamlit Community Cloud:
@@ -141,7 +145,7 @@ For a first demo deployment on Streamlit Community Cloud:
 4. Leave secrets empty for the first deployment and use **Generated sample** with online AI off. If enabling a provider later, paste its TOML key into the hosting service's Secrets settings, never into Git.
 5. After deployment check Overview, Products & Regions, Forecast, Anomalies, AI Insights in local mode, and Data & EDA. Verify CSV upload separately using the local synthetic QA file.
 
-The repository excludes the real workbook, SQLite database, generated QA CSV, environments, and actual secrets. **Real-data SQL (GBP) will show its missing-database message on a fresh host** until an explicit data-provisioning process is added. No sample data is substituted. The synthetic QA CSV can be uploaded manually; it is not automatically included on the host. No live deployment has been performed or claimed.
+The repository excludes the real workbook, SQLite database, generated QA CSV, environments, and actual secrets. **Real-data SQL (GBP) requires a separately provisioned database**; a fresh host without it displays an explicit missing-database message. No sample data is substituted. The synthetic QA CSV can be uploaded manually; it is not automatically included on the host.
 
 If a selection shows no data, ensure Region, Category, Channel and Segment each contain values; an empty selection currently means no matches. See [final pre-deployment evidence](docs/evidence/pre-deployment.md) for verification and remaining hosting limitations.
 
