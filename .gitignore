@@ -8,6 +8,7 @@ __pycache__/
 data/*.csv
 !data/README.md
 synthetic_superstore.csv
+data/synthetic-qa/
 
 data/raw/
 data/processed/

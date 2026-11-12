@@ -2,13 +2,29 @@
 
 A local-first sales analytics app for deciding **where to investigate revenue changes, margin pressure, and unusual trading periods**. Built with Python, Streamlit, pandas, statsmodels, and scikit-learn.
 
-The planned real-data SQL addition is defined in the [PRD](docs/PRD.md), [scope](docs/SCOPE.md), and [phased task checklist](docs/TASKS.md). Each implementation phase must pass its documented checks before the next begins. [Phase 0 baseline verification](docs/evidence/phase-0.md) has passed; [Phase 1 source profiling](docs/evidence/phase-1.md) has also passed; [Phase 2 database preparation](docs/evidence/phase-2.md) has passed; [Phase 3 SQL reconciliation](docs/evidence/phase-3.md) has passed; [Phase 4 UI verification](docs/evidence/phase-4.md) has passed, including user visual review; [Phase 5 report verification](docs/evidence/phase-5.md) has passed; [Phase 6 release verification](docs/evidence/phase-6.md) passed, including local full-data checks and both Python 3.11/3.12 GitHub Actions jobs. See [reproduction instructions](docs/release-readiness.md).
+All six implementation phases and the baseline gate are complete. See the [acceptance evidence](docs/evidence/README.md), [requirements](docs/PRD.md), and [reproduction instructions](docs/release-readiness.md). The latest local pre-deployment check passed **132 tests**; [GitHub Actions](https://github.com/PrashantDes/ai-sales-dashboard/actions) checks Python 3.11 and 3.12.
 
 **Start with the [real-data SQL case study](docs/sql-case-study.md)** for historical UCI retail analysis: inspectable SQL, independently reconciled findings, preparation judgments and proposed investigations. The [synthetic case study](docs/case-study.md) remains a separate demonstration. Neither claims client work or realised business impact. No API key is required.
 
-![Generated analytical preview of the synthetic demo, not an app screenshot](docs/demo-preview.svg)
+## App screenshots
 
-![Computed historical retail charts, not an application screenshot](docs/sql-case-study-charts.svg)
+Actual captures from the locally running app at 1600 × 1200, with online AI disabled. The sales screens use the built-in seed-42 generated sample and its default final-90-day selection; the SQL screen uses the accepted local historical database. These are separate datasets and currencies.
+
+![Sales overview showing scoped KPI cards and decisions to investigate](docs/assets/sales-overview.png)
+
+![Product and regional sales analysis in the running app](docs/assets/sales-products.png)
+
+![Revenue forecast and chronological validation in the running app](docs/assets/sales-forecast.png)
+
+![Historical GBP retail SQL analysis with source and quality context](docs/assets/retail-sql.png)
+
+## Architecture and workflow
+
+![Application architecture and data flow: validation and pandas analytics, historical SQLite and reconciled SQL, Streamlit views, and opt-in AI](docs/assets/architecture.svg)
+
+Open the [editable Excalidraw diagram](docs/assets/architecture.excalidraw) in [Excalidraw](https://excalidraw.com) using **Open**. The SVG preview uses the same layout; regenerate both with `python scripts/build_architecture_diagram.py`.
+
+Sales uploads pass validation and cleaning before pandas computes metrics, decision findings, forecasts and anomaly screening. The separate UCI path classifies workbook lines into a local SQLite database; parameterised SQL is checked against an independent Python reconciliation. Streamlit caches expensive results and computes analytical tabs when opened. Online AI receives scoped aggregates only after explicit opt-in and a user action; local summaries require no credentials.
 
 ## What a reviewer can inspect
 
@@ -58,6 +74,8 @@ python scripts/build_sql_case_study.py
 The synthetic command regenerates its seed-42 artifacts. The SQL report command uses the accepted local database to regenerate the historical report, aggregate JSON, SVG and PNG charts, and reruns its independent reconciliation. Report plotting requires the development dependencies. Both reports omit generation timestamps and are deterministic within the recorded dependency environment. Dependencies are version-bounded, not fully locked; scientific optimisation can produce small numerical differences across versions.
 
 ## Data and interpretation
+
+To check sales values and graphs using a larger fictional upload, generate the [synthetic QA dataset](docs/synthetic-qa.md). It includes seven filter scenarios with exact KPI totals and chart reference tables: `python scripts/build_synthetic_qa.py`.
 
 | Source | Scope | Preparation |
 | --- | --- | --- |
@@ -115,7 +133,17 @@ Only aggregates are sent, but grouped labels and business metrics may still be s
 
 Tests cover generator edge cases, validation and cleaning, forecast baselines and leakage, business finding arithmetic, provider contracts, partial streaming failures, and Streamlit navigation/upload flows. CI runs tests and a dependency audit on Python 3.11 and 3.12.
 
-For a demo deployment, use `app.py` as the entry point and install `requirements.txt`. Start with generated data and no keys. A public demo URL is not included because this repository has not been deployed as part of this work.
+For a first demo deployment on Streamlit Community Cloud:
+
+1. Sign in at [share.streamlit.io](https://share.streamlit.io/) and authorize the GitHub repository, including private-repository access if needed.
+2. Create an app from `PrashantDes/ai-sales-dashboard`, branch `main`, entry point `app.py`.
+3. In Advanced settings choose **Python 3.12**. Runtime dependencies come from `requirements.txt`; no development dependencies are needed to serve the app.
+4. Leave secrets empty for the first deployment and use **Generated sample** with online AI off. If enabling a provider later, paste its TOML key into the hosting service's Secrets settings, never into Git.
+5. After deployment check Overview, Products & Regions, Forecast, Anomalies, AI Insights in local mode, and Data & EDA. Verify CSV upload separately using the local synthetic QA file.
+
+The repository excludes the real workbook, SQLite database, generated QA CSV, environments, and actual secrets. **Real-data SQL (GBP) will show its missing-database message on a fresh host** until an explicit data-provisioning process is added. No sample data is substituted. The synthetic QA CSV can be uploaded manually; it is not automatically included on the host. No live deployment has been performed or claimed.
+
+If a selection shows no data, ensure Region, Category, Channel and Segment each contain values; an empty selection currently means no matches. See [final pre-deployment evidence](docs/evidence/pre-deployment.md) for verification and remaining hosting limitations.
 
 ```text
 app.py                       Streamlit interface

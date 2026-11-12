@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="980" viewBox="0 0 1320 980" role="img" aria-labelledby="title desc">
+<title id="title">Sales Intelligence architecture and workflow</title>
+<desc id="desc">Sales inputs are validated for pandas analytics. The historical retail workbook is classified into SQLite and read through reconciled SQL. Streamlit displays these separate flows. Optional online AI receives aggregates after explicit user action. Tests verify both paths.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10" fill="none" stroke="#475569" stroke-width="1.5"/></marker></defs>
+<rect width="1320" height="980" fill="#f8fafc"/>
+<text x="40" y="52.0" font-family="Arial, sans-serif" font-size="30" fill="#0f172a">Sales Intelligence | architecture and workflow</text>
+<text x="40" y="84.0" font-family="Arial, sans-serif" font-size="19" fill="#475569">Two analytical paths, one local-first interface. Online generation is optional.</text>
+<rect x="40" y="120" width="390" height="120" rx="12" fill="#dbeafe" stroke="#334155" stroke-width="2"/>
+<text x="58" y="156.0" font-family="Arial, sans-serif" font-size="22" fill="#0f172a">Sales inputs (INR / USD)</text>
+<text x="58" y="189.0" font-family="Arial, sans-serif" font-size="17" fill="#334155">Generated sample or CSV upload</text>
+<text x="58" y="211.95" font-family="Arial, sans-serif" font-size="17" fill="#334155">Synthetic QA pack / Superstore</text>
+<rect x="480" y="120" width="390" height="120" rx="12" fill="#dcfce7" stroke="#334155" stroke-width="2"/>
+<text x="498" y="156.0" font-family="Arial, sans-serif" font-size="22" fill="#0f172a">Historical retail input (GBP)</text>
+<text x="498" y="189.0" font-family="Arial, sans-serif" font-size="17" fill="#334155">UCI Online Retail workbook</text>
+<text x="498" y="211.95" font-family="Arial, sans-serif" font-size="17" fill="#334155">Local acquisition + source manifest</text>
+<rect x="920" y="120" width="360" height="270" rx="12" fill="#fef3c7" stroke="#334155" stroke-width="2"/>
+<text x="938" y="156.0" font-family="Arial, sans-serif" font-size="22" fill="#0f172a">Interpretation boundaries</text>
+<text x="938" y="189.0" font-family="Arial, sans-serif" font-size="17" fill="#334155">Synthetic data is fictional</text>
+<text x="938" y="211.95" font-family="Arial, sans-serif" font-size="17" fill="#334155">Historical retail: 2010–2011</text>
+<text x="938" y="234.9" font-family="Arial, sans-serif" font-size="17" fill="#334155">No invented retail profit</text>
+<text x="938" y="257.85" font-family="Arial, sans-serif" font-size="17" fill="#334155">No causal uplift claims</text>
+<text x="938" y="280.8" font-family="Arial, sans-serif" font-size="17" fill="#334155">No realised impact claimed</text>
+<text x="938" y="303.75" font-family="Arial, sans-serif" font-size="17" fill="#334155">Separate currencies and contracts</text>
+<rect x="40" y="285" width="390" height="120" rx="12" fill="#dbeafe" stroke="#334155" stroke-width="2"/>
+<text x="58" y="321.0" font-family="Arial, sans-serif" font-size="22" fill="#0f172a">Validate and audit</text>
+<text x="58" y="354.0" font-family="Arial, sans-serif" font-size="17" fill="#334155">Dates, IDs, numeric ranges, discounts</text>
+<text x="58" y="376.95" font-family="Arial, sans-serif" font-size="17" fill="#334155">Recorded profit = revenue − cost</text>
+<rect x="480" y="285" width="390" height="120" rx="12" fill="#dcfce7" stroke="#334155" stroke-width="2"/>
+<text x="498" y="321.0" font-family="Arial, sans-serif" font-size="22" fill="#0f172a">Classify and prepare SQLite</text>
+<text x="498" y="354.0" font-family="Arial, sans-serif" font-size="17" fill="#334155">Contract, exclusions, quarantine</text>
+<text x="498" y="376.95" font-family="Arial, sans-serif" font-size="17" fill="#334155">Atomic rebuild + exact GBP units</text>
+<rect x="40" y="450" width="390" height="120" rx="12" fill="#dbeafe" stroke="#334155" stroke-width="2"/>
+<text x="58" y="486.0" font-family="Arial, sans-serif" font-size="22" fill="#0f172a">Pandas analytics</text>
+<text x="58" y="519.0" font-family="Arial, sans-serif" font-size="17" fill="#334155">KPIs, decisions, loss exposure</text>
+<text x="58" y="541.95" font-family="Arial, sans-serif" font-size="17" fill="#334155">Forecast validation + anomaly screening</text>
+<rect x="480" y="450" width="390" height="120" rx="12" fill="#dcfce7" stroke="#334155" stroke-width="2"/>
+<text x="498" y="486.0" font-family="Arial, sans-serif" font-size="22" fill="#0f172a">Read-only, parameterised SQL</text>
+<text x="498" y="519.0" font-family="Arial, sans-serif" font-size="17" fill="#334155">Trends, exposure, concentration, repeat</text>
+<text x="498" y="541.95" font-family="Arial, sans-serif" font-size="17" fill="#334155">Independent Python reconciliation</text>
+<rect x="40" y="635" width="830" height="135" rx="12" fill="#ede9fe" stroke="#334155" stroke-width="2"/>
+<text x="58" y="671.0" font-family="Arial, sans-serif" font-size="22" fill="#0f172a">Streamlit interface | source, dates and dimension filters</text>
+<text x="58" y="704.0" font-family="Arial, sans-serif" font-size="17" fill="#334155">Separate sales dashboard and Real-data SQL view; lazy tabs and cached results</text>
+<text x="58" y="726.95" font-family="Arial, sans-serif" font-size="17" fill="#334155">Charts, scoped tables, definitions, cleaning reports and aggregate downloads</text>
+<rect x="920" y="635" width="360" height="135" rx="12" fill="#ffedd5" stroke="#334155" stroke-width="2"/>
+<text x="938" y="671.0" font-family="Arial, sans-serif" font-size="22" fill="#0f172a">Optional online AI</text>
+<text x="938" y="704.0" font-family="Arial, sans-serif" font-size="17" fill="#334155">Explicit toggle + user action</text>
+<text x="938" y="726.95" font-family="Arial, sans-serif" font-size="17" fill="#334155">Groq / Gemini / Anthropic</text>
+<text x="938" y="749.9" font-family="Arial, sans-serif" font-size="17" fill="#334155">Aggregates in; generated text out</text>
+<rect x="40" y="840" width="1240" height="100" rx="12" fill="#e2e8f0" stroke="#334155" stroke-width="2"/>
+<text x="58" y="876.0" font-family="Arial, sans-serif" font-size="22" fill="#0f172a">Verification and portfolio evidence</text>
+<text x="58" y="909.0" font-family="Arial, sans-serif" font-size="17" fill="#334155">Offline pytest + UI flows | Python 3.11 / 3.12 CI + dependency audit | deterministic reports + exact-value QA references</text>
+<path d="M235,240 l0,45" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M235,405 l0,45" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M235,570 l0,65" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M675,240 l0,45" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M675,405 l0,45" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M675,570 l0,65" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M870,704 l50,0" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<text x="935" y="814.0" font-family="Arial, sans-serif" font-size="16" fill="#475569">No provider request in local mode</text>
+<text x="40" y="966.0" font-family="Arial, sans-serif" font-size="15" fill="#475569">Editable source: architecture.excalidraw | SVG preview generated from the same layout</text>
+</svg>
