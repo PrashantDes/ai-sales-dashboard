@@ -1,6 +1,6 @@
 # Product requirements: Sales Intelligence Dashboard and real-data SQL investigation
 
-Version: 1.0 | Date: 2026-11-12 | Status: planned addition; [Phase 0 baseline verified](evidence/phase-0.md), [Phase 1 source contract verified](evidence/phase-1.md), [Phase 2 database verified](evidence/phase-2.md), [Phase 3 SQL verified](evidence/phase-3.md), [Phase 4 UI verified](evidence/phase-4.md), [Phase 5 report verified](evidence/phase-5.md), [Phase 6 local checks passed; remote CI pending](evidence/phase-6.md)
+Version: 1.0 | Date: 2026-11-12 | Status: planned addition; [Phase 0 baseline verified](evidence/phase-0.md), [Phase 1 source contract verified](evidence/phase-1.md), [Phase 2 database verified](evidence/phase-2.md), [Phase 3 SQL verified](evidence/phase-3.md), [Phase 4 UI verified](evidence/phase-4.md), [Phase 5 report verified](evidence/phase-5.md), [Phase 6 release verification passed](evidence/phase-6.md)
 
 Related documents: [Scope](SCOPE.md), [phased tasks and gates](TASKS.md), [existing method notes](methods.md).
 

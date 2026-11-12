@@ -24,7 +24,7 @@ These gates are a workflow specification, not an implemented enforcement script.
 | P3 SQL/reconciliation | PASS | [Phase 3 evidence](evidence/phase-3.md) | Named SQL reconciled on fixtures and real data |
 | P4 UI integration | PASS | [Phase 4 evidence](evidence/phase-4.md) | UI verified; visual review confirmed by user |
 | P5 Case study | PASS | [Phase 5 evidence](evidence/phase-5.md) | Real-data report regenerated and verified |
-| P6 Release verification | BLOCKED | [Phase 6 evidence](evidence/phase-6.md) | Local checks pass; required GitHub Actions jobs pending |
+| P6 Release verification | PASS | [Phase 6 evidence](evidence/phase-6.md) | Local verification and both Ubuntu CI jobs passed |
 
 Allowed gate states: `READY`, `IN PROGRESS`, `BLOCKED`, `FAIL`, `PASS`, `RECHECK REQUIRED`. Blocked here means a phase dependency, not a finding that the existing dashboard is broken.
 
@@ -200,7 +200,7 @@ Entry: P5 PASS. Addresses FR-01 and FR-11.
 - [x] P6-05 Measure preparation time and warm filtered-view time on a recorded machine against PRD targets; record results and any resolved deviation.
 - [x] P6-06 Verify all source/archive/database paths are ignored, manifests/reports expose only intended metadata/aggregates, and no key or customer-level export is tracked.
 - [x] P6-07 Verify release diffs, artifact links, limitations, and the phase evidence index. Preserve unrelated work.
-- [ ] P6-08 Mark all gates PASS only when evidence is complete. Commit/merge/publish only when authorised; deployment is outside this scope.
+- [x] P6-08 Mark all gates PASS only when evidence is complete. Commit/merge/publish only when authorised; deployment is outside this scope.
 
 Final check commands include the following existing commands plus the implemented preparation/SQL/report commands documented during P1-P5:
 

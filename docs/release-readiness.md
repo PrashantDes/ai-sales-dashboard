@@ -1,6 +1,6 @@
 # Reproduce the release candidate
 
-Local Phase 6 checks passed on Windows with Python 3.11.18 and 3.12.10. Remote Ubuntu CI is pending; see [Phase 6 evidence](evidence/phase-6.md) and the [phase checklist](TASKS.md). The README's broader Python support range was not fully exercised in this verification.
+Local Phase 6 checks passed on Windows with Python 3.11.18 and 3.12.10. Both required remote Ubuntu CI jobs passed in [run 43185262924](https://github.com/PrashantDes/ai-sales-dashboard/actions/runs/43185262924); see [Phase 6 evidence](evidence/phase-6.md) and the [phase checklist](TASKS.md). The README's broader Python support range was not fully exercised in this verification.
 
 Use a fresh environment from the repository root. For Windows Python 3.12:
 

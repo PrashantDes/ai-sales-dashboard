@@ -1,6 +1,6 @@
 # Phase 6 release verification
 
-- Status: BLOCKED — local checks PASS; GitHub Actions pending.
+- Status: PASS — local checks and both required GitHub Actions jobs passed.
 - Verification date: 2026-11-12, Asia/Kolkata. Executor: Codex; self-review, no independent reviewer claimed.
 - Candidate: `feat/retail-sql-investigation`, base `7789d0632068378bbdef0d5485435c3042ce8ad5`, including existing uncommitted work. [Source hashes](phase-6/source-snapshot.json) identify the tested source; subsequent edits document these results.
 - Upstream P0–P5 remain accepted. No product code changed for P6.
@@ -29,8 +29,8 @@ The full-data run used fresh Python 3.12 and the accepted workbook already prese
 
 Hardware: Windows 11 build 26300, Intel64 Family 6 Model 151 Stepping 2, 12 logical CPUs. Performance measured a running Streamlit 1.67.0 app using localhost agent API requests, including server view generation and JSON transfer, excluding browser JavaScript and paint. Initial demo took 3.453s; first real view 3.907s; first filtered scope 1.312s. The 3s requirement is explicitly for warm filtered requests. Scope was United Kingdom, 2011-03-01 through 2011-09-30 inclusive. Server console showed no application exception during these requests. P4's user-confirmed visual review remains separate evidence.
 
-## Gate decision and remaining blocker
+## Gate decision
 
-The [task checklist](../TASKS.md) requires successful CI jobs. Local Windows runs do not establish Ubuntu GitHub Actions success. The supplied repository `https://github.com/PrashantDes/ai-sales-dashboard` was reachable with no advertised refs and configured as `origin`. No push, remote CI run, merge, deployment or online AI request is claimed.
+The [task checklist](../TASKS.md) requires successful CI jobs. With explicit user approval, the candidate was committed and pushed to `main` in `https://github.com/PrashantDes/ai-sales-dashboard`. [GitHub Actions run 43185262924](https://github.com/PrashantDes/ai-sales-dashboard/actions/runs/43185262924) completed successfully on commit `fce9a64c2c806756e1f06edadab8335236af6763` at 2026-11-12 14:14:52 IST. Both Ubuntu jobs, Python 3.11 and 3.12, passed installation, runtime dependency audit, tests, and synthetic report generation. [API job evidence](phase-6/remote-ci.json) records the exact commit and steps. No deployment or online AI request is claimed.
 
-P6 remains BLOCKED until the reviewed candidate is published with authorization and both required Python jobs pass. No earlier phase is reopened by these documentation-only changes. Dependency audits are point-in-time checks, and pattern scanning cannot guarantee detection of every secret format.
+P6 is PASS: every required task is complete, all upstream gates remain accepted, and no release blocker remains. Captured evidence log line endings were normalized before publication; analytical results were unchanged. This final evidence update changes documentation only. No earlier phase is reopened by these documentation-only changes. Dependency audits are point-in-time checks, and pattern scanning cannot guarantee detection of every secret format.

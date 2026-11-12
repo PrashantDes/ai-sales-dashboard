@@ -8,6 +8,6 @@
 | 3 SQL reconciliation | PASS | [Evidence](phase-3.md) |
 | 4 UI integration | PASS | [Evidence](phase-4.md) |
 | 5 Case study | PASS | [Evidence](phase-5.md) |
-| 6 Release verification | BLOCKED: remote CI pending; local checks pass | [Evidence](phase-6.md) |
+| 6 Release verification | PASS | [Evidence](phase-6.md) |
 
 The [task checklist](../TASKS.md) defines each required gate. A local passing matrix does not establish remote CI success.
