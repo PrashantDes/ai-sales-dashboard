@@ -1,0 +1,151 @@
+{
+  "data_kind": "synthetic",
+  "seed": 42,
+  "generator_start": "2023-01-01",
+  "generator_end": "2026-10-25",
+  "current_start": "2026-07-28",
+  "current_end": "2026-10-25",
+  "previous_start": "2026-04-29",
+  "previous_end": "2026-07-27",
+  "metrics": {
+    "revenue": 91606978.18,
+    "profit": 21945383.769999996,
+    "margin_pct": 23.956017550190513,
+    "orders": 7151,
+    "lines": 7151,
+    "previous_revenue": 71124545.62,
+    "revenue_change_pct": 28.79798019298756
+  },
+  "decision_brief": {
+    "findings": [
+      {
+        "id": "revenue_driver",
+        "title": "Review South: largest regional revenue movement",
+        "evidence": "South moved from ₹19,084,315 to ₹25,458,959 (₹6,374,645 increase). Total revenue changed by ₹20,482,433.",
+        "action": "Compare order volume, product mix, and promotions in this region before changing budget or stock allocation.",
+        "caveat": "This locates the movement; it does not explain its cause. The comparison assumes complete data in equally sized windows and does not adjust for seasonality.",
+        "metrics": {
+          "region": "South",
+          "current_revenue": 25458959.44,
+          "previous_revenue": 19084314.87,
+          "change": 6374644.57,
+          "total_revenue_change": 20482432.560000002
+        }
+      },
+      {
+        "id": "loss_exposure",
+        "title": "Check loss-making lines for Smartphone",
+        "evidence": "93 loss-making lines generated ₹3,795,434 in revenue and ₹131,155 in gross losses. Smartphone accounts for ₹75,580 of those losses.",
+        "action": "Inspect pricing, discounts, and recorded costs for these lines; review exceptions before approving another promotion.",
+        "caveat": "Loss exposure sums negative-profit lines, not net product profit. Some promotions may be intentional. These losses are not a savings estimate.",
+        "metrics": {
+          "loss_amount": 131155.26,
+          "loss_line_revenue": 3795433.9599999995,
+          "loss_line_count": 93,
+          "revenue_share_pct": 4.143171224950015,
+          "product": "Smartphone",
+          "product_loss": 75580.5
+        }
+      },
+      {
+        "id": "discount_association",
+        "title": "Validate the promotion margin tradeoff",
+        "evidence": "Revenue-weighted margin is 29.3% on 2,448 full-price lines and 20.8% on 4,703 discounted lines (discounted minus full-price: -8.4 percentage points).",
+        "action": "Compare like-for-like products and customer groups, then test a promotion with a control group before changing discount policy.",
+        "caveat": "This is an association, not a causal discount effect. Different products, customers, and seasons can explain the gap; volume uplift is not estimated.",
+        "metrics": {
+          "full_price_margin_pct": 29.25910754355614,
+          "discounted_margin_pct": 20.815903870849738,
+          "gap_pts": -8.443203672706403,
+          "full_price_lines": 2448,
+          "discounted_lines": 4703
+        }
+      }
+    ],
+    "region_drivers": [
+      {
+        "region": "South",
+        "current_revenue": 25458959.44,
+        "previous_revenue": 19084314.87,
+        "change": 6374644.57
+      },
+      {
+        "region": "West",
+        "current_revenue": 27091225.8,
+        "previous_revenue": 20981080.57,
+        "change": 6110145.23
+      },
+      {
+        "region": "North",
+        "current_revenue": 25643114.89,
+        "previous_revenue": 20195646.17,
+        "change": 5447468.719999999
+      },
+      {
+        "region": "East",
+        "current_revenue": 13413678.05,
+        "previous_revenue": 10863504.01,
+        "change": 2550174.040000001
+      }
+    ],
+    "loss_exposure": {
+      "loss_amount": 131155.26,
+      "loss_line_revenue": 3795433.9599999995,
+      "loss_line_count": 93,
+      "revenue_share_pct": 4.143171224950015,
+      "product": "Smartphone",
+      "product_loss": 75580.5
+    },
+    "discount_comparison": {
+      "full_price_margin_pct": 29.25910754355614,
+      "discounted_margin_pct": 20.815903870849738,
+      "gap_pts": -8.443203672706403,
+      "full_price_lines": 2448,
+      "discounted_lines": 4703
+    },
+    "comparison_available": true
+  },
+  "forecast_evidence": {
+    "method": "Damped-trend Holt-Winters",
+    "history_months": 45,
+    "evaluation": {
+      "holdout_months": 3,
+      "training_months": 42,
+      "baseline_method": "seasonal_naive",
+      "baseline_label": "Seasonal naive (same month last year)",
+      "selected_method": "holt_winters",
+      "hw_mae": 1151109.4928135735,
+      "baseline_mae": 5202720.216666668,
+      "hw_wape": 0.041333150498846054,
+      "baseline_wape": 0.1868152587233503,
+      "selected_mae": 1151109.4928135735,
+      "selected_wape": 0.041333150498846054,
+      "selected_mape": 0.04138986612747766,
+      "improvement_pct": 77.87485306001948,
+      "note": "Last 3 months used for model selection; this is not an independent test score."
+    },
+    "holdout": [
+      {
+        "month": "2026-07",
+        "actual": 25603293.76,
+        "holt_winters": 24428700.616929237,
+        "baseline": 20495535.35,
+        "selected": 24428700.616929237
+      },
+      {
+        "month": "2026-08",
+        "actual": 28593755.47,
+        "holt_winters": 27866024.433342397,
+        "baseline": 24022716.81,
+        "selected": 27866024.433342397
+      },
+      {
+        "month": "2026-09",
+        "actual": 29351589.98,
+        "holt_winters": 27800585.681287646,
+        "baseline": 23422226.4,
+        "selected": 27800585.681287646
+      }
+    ]
+  }
+}

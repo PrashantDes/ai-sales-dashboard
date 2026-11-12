@@ -1,0 +1,18 @@
+{
+  "candidate_text_files_scanned": 121,
+  "credential_pattern_findings": [],
+  "scope": "Pattern-based candidate-file check, not a guarantee against every secret format",
+  "raw_or_database_files_in_candidate": false,
+  "customer_identifiers_in_real_report_query_rows": false,
+  "ignored_paths": [
+    ".venv",
+    ".env",
+    ".streamlit/secrets.toml",
+    "data/raw/probe.xlsx",
+    "data/processed/probe.sqlite"
+  ],
+  "runtime_dependencies_audited": 70,
+  "known_vulnerabilities": [],
+  "audit_skipped": [],
+  "staging_area_empty": true
+}

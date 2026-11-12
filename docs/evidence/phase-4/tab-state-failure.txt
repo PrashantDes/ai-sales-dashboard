@@ -1,0 +1,101 @@
+.............F......F................................................... [ 56%]
+.......................................................                  [100%]
+================================== FAILURES ===================================
+________________________ test_every_local_tab_renders _________________________
+
+app = AppTest(
+    _script_path='D:\\study material\\projects\\ai-sales-dashboard\\app.py',
+    default_timeout=40,
+    _ses...             16: Caption()
+            }
+        ),
+        2: SpecialBlock(
+            type='event'
+        )
+    }
+)
+
+    def test_every_local_tab_renders(app):
+        for label in ["Products & Regions", "Forecast", "Anomalies", "AI Insights", "Data & EDA"]:
+            app.session_state["dashboard_tabs"] = label
+            app.run()
+            assert not app.exception, label
+        app.session_state["dashboard_tabs"] = "Forecast"
+        app.run()
+>       assert any("Validation WAPE" in m.label for m in app.metric)
+E       assert False
+E        +  where False = any(<generator object test_every_local_tab_renders.<locals>.<genexpr> at 0x0000015195FFF9F0>)
+
+tests\test_app.py:42: AssertionError
+---------------------------- Captured stderr setup ----------------------------
+2026-11-12 13:29:20.407 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+----------------------------- Captured log setup ------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:522 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+---------------------------- Captured stderr call -----------------------------
+2026-11-12 13:29:21.003 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-12 13:29:21.374 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-12 13:29:21.743 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-12 13:29:22.000 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-12 13:29:22.337 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-12 13:29:22.605 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+------------------------------ Captured log call ------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:522 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:522 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:522 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:522 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:522 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:522 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+____________________ test_tab_settings_survive_navigation _____________________
+
+app = AppTest(
+    _script_path='D:\\study material\\projects\\ai-sales-dashboard\\app.py',
+    default_timeout=40,
+    _ses...             16: Caption()
+            }
+        ),
+        2: SpecialBlock(
+            type='event'
+        )
+    }
+)
+
+    def test_tab_settings_survive_navigation(app):
+        app.session_state["dashboard_tabs"] = "Forecast"
+        app.run()
+        app.slider[0].set_value(12).run()
+        app.session_state["dashboard_tabs"] = "Overview"
+        app.run()
+        app.session_state["dashboard_tabs"] = "Forecast"
+        app.run()
+>       assert app.slider[0].value == 12
+               ^^^^^^^^^^^^^
+
+tests\test_app.py:110: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WidgetList(), idx = 0
+
+    def __getitem__(self, idx: int | slice) -> El_co | ElementList[El_co]:
+        if isinstance(idx, slice):
+            return ElementList(self._list[idx])
+>       return self._list[idx]
+               ^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+.venv\Lib\site-packages\streamlit\testing\v1\element_tree.py:576: IndexError
+---------------------------- Captured stderr setup ----------------------------
+2026-11-12 13:29:28.767 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+----------------------------- Captured log setup ------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:522 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+---------------------------- Captured stderr call -----------------------------
+2026-11-12 13:29:29.403 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-12 13:29:30.541 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-12 13:29:30.889 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+------------------------------ Captured log call ------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:522 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:522 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:522 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+=========================== short test summary info ===========================
+FAILED tests/test_app.py::test_every_local_tab_renders - assert False
+FAILED tests/test_app.py::test_tab_settings_survive_navigation - IndexError: ...
+2 failed, 125 passed in 32.40s

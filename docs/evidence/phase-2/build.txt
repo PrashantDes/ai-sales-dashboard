@@ -1,0 +1,40 @@
+{
+  "source_rows": 541909,
+  "dispositions": {
+    "sale": 527758,
+    "excluded": 5445,
+    "cancellation": 8704,
+    "quarantined": 2
+  },
+  "signed_value_units": {
+    "sale": 10271433060,
+    "excluded": -22836826,
+    "cancellation": -478724180,
+    "quarantined": -22124120
+  },
+  "unpriceable_rows": 0,
+  "overlapping_flags": {
+    "nonstandard_code": 3385,
+    "duplicate_excess": 5268,
+    "missing_customer": 135080,
+    "missing_description": 1454
+  },
+  "deduplicated_sensitivity_signed_units": 9726006954,
+  "retained_signed_units": 9747747934,
+  "positive_units": 10666684544,
+  "negative_units": -918936610,
+  "invoice_timestamp_conflicts": 43,
+  "integrity": "ok",
+  "foreign_key_violations": 0,
+  "eligible_invoice_join_preserves_rows_and_values": true,
+  "analytical_sha256": "b21622ae307c7f49b14a9c584e57707a8bd1840b645d0a86d56add24eae1e09d",
+  "source_identity": {
+    "workbook_sha256": "43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d",
+    "worksheet": "Online Retail",
+    "schema_version": "1.0",
+    "policy_version": "1.0",
+    "price_scale": "1000",
+    "analytical_sha256": "b21622ae307c7f49b14a9c584e57707a8bd1840b645d0a86d56add24eae1e09d"
+  }
+}
+

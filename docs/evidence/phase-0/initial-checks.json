@@ -1,0 +1,18 @@
+[
+  {
+    "command": ".\\.venv\\Scripts\\python.exe -m pip check",
+    "exit_code": 0,
+    "started_at_ist": "2026-11-12T00:14:29.590046+05:30",
+    "finished_at_ist": "2026-11-12T00:14:30.448494+05:30",
+    "duration_seconds": 0.858448,
+    "log": "initial-pip-check.txt"
+  },
+  {
+    "command": ".\\.venv\\Scripts\\python.exe -m pytest",
+    "exit_code": 0,
+    "started_at_ist": "2026-11-12T00:14:30.450500+05:30",
+    "finished_at_ist": "2026-11-12T00:14:45.727850+05:30",
+    "duration_seconds": 15.27735,
+    "log": "initial-pytest.txt"
+  }
+]

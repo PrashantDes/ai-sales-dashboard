@@ -1,0 +1,107 @@
+[
+  {
+    "scope": [
+      "2010-12-01",
+      "2011-12-10",
+      null
+    ],
+    "result": {
+      "queries_checked": 7,
+      "selected_line_count": 541909,
+      "gross_units": 10271433060,
+      "identified_gross_units": 8761066650,
+      "sales_invoices": 19773,
+      "identified_customers": 4334,
+      "repeat_customers": 2829,
+      "all_queries_match_independent_python": true,
+      "output_rows": {
+        "10_monthly": 12,
+        "20_stock_code_exposure": 3921,
+        "20_country_exposure": 38,
+        "30_stock_code_concentration": 3907,
+        "30_customer_id_concentration": 4334,
+        "40_repeat": 1,
+        "41_purchase_sequence": 18402
+      }
+    }
+  },
+  {
+    "scope": [
+      "2011-03-01",
+      "2011-10-01",
+      "United Kingdom"
+    ],
+    "result": {
+      "queries_checked": 7,
+      "selected_line_count": 240998,
+      "gross_units": 4300804780,
+      "identified_gross_units": 3711214630,
+      "sales_invoices": 9490,
+      "identified_customers": 2858,
+      "repeat_customers": 1632,
+      "all_queries_match_independent_python": true,
+      "output_rows": {
+        "10_monthly": 7,
+        "20_stock_code_exposure": 3525,
+        "20_country_exposure": 1,
+        "30_stock_code_concentration": 3519,
+        "30_customer_id_concentration": 2858,
+        "40_repeat": 1,
+        "41_purchase_sequence": 8752
+      }
+    }
+  },
+  {
+    "scope": [
+      "2011-12-01",
+      "2011-12-10",
+      null
+    ],
+    "result": {
+      "queries_checked": 7,
+      "selected_line_count": 25525,
+      "gross_units": 615493270,
+      "identified_gross_units": 513230430,
+      "sales_invoices": 816,
+      "identified_customers": 614,
+      "repeat_customers": 105,
+      "all_queries_match_independent_python": true,
+      "output_rows": {
+        "10_monthly": 0,
+        "20_stock_code_exposure": 2475,
+        "20_country_exposure": 21,
+        "30_stock_code_concentration": 2464,
+        "30_customer_id_concentration": 614,
+        "40_repeat": 1,
+        "41_purchase_sequence": 776
+      }
+    }
+  },
+  {
+    "scope": [
+      "2011-01-01",
+      "2011-02-01",
+      "x' OR 1=1 --"
+    ],
+    "result": {
+      "queries_checked": 7,
+      "selected_line_count": 0,
+      "gross_units": 0,
+      "identified_gross_units": 0,
+      "sales_invoices": 0,
+      "identified_customers": 0,
+      "repeat_customers": 0,
+      "all_queries_match_independent_python": true,
+      "output_rows": {
+        "10_monthly": 0,
+        "20_stock_code_exposure": 0,
+        "20_country_exposure": 0,
+        "30_stock_code_concentration": 0,
+        "30_customer_id_concentration": 0,
+        "40_repeat": 1,
+        "41_purchase_sequence": 0
+      }
+    }
+  }
+]
+

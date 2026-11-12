@@ -10,6 +10,8 @@ import re
 import numpy as np
 import pandas as pd
 
+from sales_ai.data import normalize_discounts
+
 # Needed for the full dashboard (margin analysis needs Profit; discount analysis needs Discount)
 _REQUIRED = ["order id", "order date", "segment", "region", "category",
              "product name", "sales", "quantity", "discount", "profit"]
@@ -51,6 +53,8 @@ def clean_superstore(raw: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     steps: list[tuple[str, str]] = []
     df = raw.copy()
     df.columns = [_norm(c) for c in df.columns]
+    if not df.columns.is_unique:
+        raise ValueError("Duplicate column names after normalization. Keep one column for each field.")
 
     missing = [c for c in _REQUIRED if c not in df.columns]
     if missing:
@@ -73,6 +77,10 @@ def clean_superstore(raw: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     n_dup = int(df.duplicated().sum())
     df = df.drop_duplicates()
     steps.append(("Exact duplicate rows removed", f"{n_dup:,}"))
+    identifiers = df["order id"].astype("string").str.strip()
+    missing_ids = identifiers.isna() | identifiers.eq("")
+    df = df.loc[~missing_ids].copy()
+    steps.append(("Rows with missing order IDs dropped", f"{int(missing_ids.sum()):,}"))
 
     # 3. dates
     dayfirst = _detect_dayfirst(df["order date"])
@@ -87,17 +95,25 @@ def clean_superstore(raw: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     # 4. numerics
     for c in ["sales", "quantity", "discount", "profit"]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
-    n_null = int(df[["sales", "quantity", "discount", "profit"]].isna().any(axis=1).sum())
-    df = df.dropna(subset=["sales", "quantity", "discount", "profit"])
-    steps.append(("Rows with missing numbers dropped", f"{n_null:,}"))
+    numeric_cols = ["sales", "quantity", "discount", "profit"]
+    invalid_numbers = ~np.isfinite(df[numeric_cols]).all(axis=1)
+    df = df.loc[~invalid_numbers].copy()
+    steps.append(("Rows with missing or non-finite numbers dropped", f"{int(invalid_numbers.sum()):,}"))
 
     n_nonpos = int((df["sales"] <= 0).sum())
     df = df[df["sales"] > 0]
     steps.append(("Non-positive sales rows dropped", f"{n_nonpos:,}"))
-
-    if df["discount"].max() > 1:
-        df["discount"] = df["discount"] / 100
+    invalid_units = (df["quantity"] <= 0) | (df["quantity"] % 1 != 0)
+    df = df.loc[~invalid_units].copy()
+    steps.append(("Rows without positive whole quantities dropped", f"{int(invalid_units.sum()):,}"))
+    if df.empty:
+        raise ValueError("No valid Superstore sales rows remain after cleaning. Check dates, order IDs, Sales, Quantity, Discount and Profit.")
+    df["discount"], rescaled = normalize_discounts(df["discount"])
+    if rescaled:
         steps.append(("Discount rescaled", "values were 0–100, converted to 0–1"))
+    invalid_cost = df["profit"] > df["sales"]
+    steps.append(("Lines where reported profit exceeds Sales (kept, review source)",
+                  f"{int(invalid_cost.sum()):,}"))
 
     # 5. derived fields (kept, not dropped)
     n_loss = int((df["profit"] < 0).sum())
@@ -108,8 +124,15 @@ def clean_superstore(raw: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         steps.append(("Ship days derived", "ship date − order date"))
 
     # 6. map to the app schema
+    missing_labels = 0
+
     def col(name: str, default: str = "Unknown") -> pd.Series:
-        return df[name].fillna(default).astype(str) if name in df.columns else pd.Series(default, index=df.index)
+        nonlocal missing_labels
+        if name not in df.columns:
+            return pd.Series(default, index=df.index)
+        labels = df[name].astype("string").str.strip().replace("", pd.NA)
+        missing_labels += int(labels.isna().sum())
+        return labels.fillna(default).astype(str)
 
     out = pd.DataFrame({
         "date": df["order date"].dt.normalize(),
@@ -133,7 +156,7 @@ def clean_superstore(raw: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     if "ship date" in df.columns:
         out["ship_days"] = (df["ship date"] - df["order date"]).dt.days
     out = out.sort_values("date").reset_index(drop=True)
-
+    steps.append(("Missing text labels filled with Unknown", f"{missing_labels:,}"))
     steps.append(("Final dataset", f"{len(out):,} lines · {out['order_id'].nunique():,} orders · "
                                    f"{out['date'].min():%d %b %Y} → {out['date'].max():%d %b %Y}"))
     return out, pd.DataFrame(steps, columns=["Step", "Result"])

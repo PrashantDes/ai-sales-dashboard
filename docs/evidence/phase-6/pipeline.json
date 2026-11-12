@@ -1,0 +1,53 @@
+{
+  "recorded_at_ist": "2026-11-12T13:58:08.261521+05:30",
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "executable": "D:\\study material\\projects\\ai-sales-dashboard\\.venv\\phase6\\py312\\Scripts\\python.exe",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+  "logical_cpus": 12,
+  "checks": [
+    {
+      "step": "database-build",
+      "exit_code": 0,
+      "seconds": 224.2
+    },
+    {
+      "step": "sql-reconciliation",
+      "exit_code": 0,
+      "seconds": 11.5
+    },
+    {
+      "step": "synthetic-report",
+      "exit_code": 0,
+      "seconds": 3.31
+    },
+    {
+      "step": "real-report",
+      "exit_code": 0,
+      "seconds": 12.27
+    }
+  ],
+  "before_sha256": {
+    "docs/case-study.md": "91f93d721c26ef97560e1ad2bdeabd05ec9b77b78800f36ed7f3d096ed5c5886",
+    "docs/case-study.json": "8cb574f0db0dd52e3e4f50750cbb5ca6803ba64b1db0b6fed454db29d1d4f2cc",
+    "docs/demo-preview.svg": "ec0d2c331fa744bd03b8bd60ab37627d569761e369704312e56592f8bcd148de",
+    "docs/sql-case-study.md": "c2be11f8cadda227f87ad40f5b36577b1e887c4e5ef12c4a0ced2fb34290d535",
+    "docs/sql-case-study.json": "de92f5ccd2aac2dd78c72b7278c55a1c006cb5bbe8bd32ebba91e740d6a583af",
+    "docs/sql-case-study-charts.svg": "27deed3334d29d645014bd80316abb0ec06d79b16aa2c179675c6a48d7a12618",
+    "docs/sql-case-study-charts.png": "b79de93b6850f4aadd5d35b638e2a2cbadef3b01491c8ec25c38aae74c6581a1",
+    "data/processed/online-retail.sqlite": "42d043fe02130bd328479becb2ea83de53a9a9a7e720c719dacbf93f74046490"
+  },
+  "after_sha256": {
+    "docs/case-study.md": "91f93d721c26ef97560e1ad2bdeabd05ec9b77b78800f36ed7f3d096ed5c5886",
+    "docs/case-study.json": "8cb574f0db0dd52e3e4f50750cbb5ca6803ba64b1db0b6fed454db29d1d4f2cc",
+    "docs/demo-preview.svg": "ec0d2c331fa744bd03b8bd60ab37627d569761e369704312e56592f8bcd148de",
+    "docs/sql-case-study.md": "c2be11f8cadda227f87ad40f5b36577b1e887c4e5ef12c4a0ced2fb34290d535",
+    "docs/sql-case-study.json": "de92f5ccd2aac2dd78c72b7278c55a1c006cb5bbe8bd32ebba91e740d6a583af",
+    "docs/sql-case-study-charts.svg": "27deed3334d29d645014bd80316abb0ec06d79b16aa2c179675c6a48d7a12618",
+    "docs/sql-case-study-charts.png": "b79de93b6850f4aadd5d35b638e2a2cbadef3b01491c8ec25c38aae74c6581a1",
+    "data/processed/online-retail.sqlite": "42d043fe02130bd328479becb2ea83de53a9a9a7e720c719dacbf93f74046490"
+  },
+  "artifact_hashes_unchanged": true,
+  "preparation_target_seconds": 300,
+  "preparation_within_target": true
+}

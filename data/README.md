@@ -1,7 +1,5 @@
-# data/
+# Optional input data
 
-Put the Superstore CSV here (e.g. `Sample - Superstore.csv`) and the dashboard picks it up automatically
-when you choose **Superstore (Kaggle CSV)** as the data source.
+Place a user-supplied `Sample - Superstore.csv` here and choose **Superstore CSV ($)** in the sidebar, or upload it directly. The file must contain sales, profit, discount, quantity, dates, and the required descriptive columns. Cleaning steps and removed rows appear in Data & EDA.
 
-Check the dataset's licence on its Kaggle page before committing the file to a public repo.
-If you don't commit it, the deployed app can still run on the built-in generated sample data.
+No third-party dataset is distributed. Verify your source licence before sharing it. CSVs here are ignored by Git. The generated local demo needs no external file. An absent or invalid upload does not silently substitute demo results.

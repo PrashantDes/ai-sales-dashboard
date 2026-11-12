@@ -1,0 +1,17 @@
+{
+  "recorded_at_ist": "2026-11-12T00:21:19.951051+05:30",
+  "verified_source_hashes_match": true,
+  "diff_check_exit_code": 0,
+  "staging_area_empty": true,
+  "temporary_server_stopped": true,
+  "ignored_paths": [
+    ".venv",
+    ".streamlit/secrets.toml",
+    "data/phase0-probe.csv"
+  ],
+  "phase_1_acquired_or_implemented": false,
+  "documentation_links_checked": 39,
+  "evidence_json_valid": true,
+  "phase_0_checkboxes_complete": true,
+  "later_phase_checkboxes_untouched": true
+}

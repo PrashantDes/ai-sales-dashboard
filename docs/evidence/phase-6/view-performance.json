@@ -1,0 +1,25 @@
+{
+  "recorded_at_ist": "2026-11-12T13:58:58.753678+05:30",
+  "streamlit_version": "1.67.0",
+  "python": "3.12.10",
+  "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+  "logical_cpus": 12,
+  "method": "End-to-end localhost agent API request, server view generation and JSON transfer; browser JavaScript/paint excluded",
+  "scope": {
+    "start_inclusive": "2011-03-01",
+    "end_exclusive": "2011-10-01",
+    "country": "United Kingdom"
+  },
+  "initial_demo_seconds": 3.453,
+  "first_real_view_seconds": 3.907,
+  "first_filtered_scope_seconds": 1.312,
+  "warm_filtered_view_seconds": [
+    0.172,
+    0.188,
+    0.171
+  ],
+  "target_seconds": 3,
+  "all_warm_runs_within_target": true,
+  "headline_matches_accepted_sql": true,
+  "errors": 0
+}

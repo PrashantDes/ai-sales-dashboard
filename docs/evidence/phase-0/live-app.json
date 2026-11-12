@@ -1,0 +1,82 @@
+{
+  "checked_at_ist": "2026-11-12T00:18:56.539130+05:30",
+  "base_url": "http://127.0.0.1:8765",
+  "method": "Running Streamlit 1.67.0 agent API over localhost; schema read before requests",
+  "checks": [
+    {
+      "check": "Initial overview",
+      "result": "PASS",
+      "detail": "Five KPI cards, offline default, inactive forecast not evaluated"
+    },
+    {
+      "check": "Products & Regions",
+      "result": "PASS",
+      "detail": {
+        "status": "ready",
+        "metrics": 5,
+        "tables": 0
+      }
+    },
+    {
+      "check": "Forecast",
+      "result": "PASS",
+      "detail": {
+        "status": "ready",
+        "metrics": 8,
+        "tables": 3
+      }
+    },
+    {
+      "check": "Anomalies",
+      "result": "PASS",
+      "detail": {
+        "status": "ready",
+        "metrics": 5,
+        "tables": 0
+      }
+    },
+    {
+      "check": "AI Insights",
+      "result": "PASS",
+      "detail": {
+        "status": "ready",
+        "metrics": 5,
+        "tables": 0
+      }
+    },
+    {
+      "check": "Data & EDA",
+      "result": "PASS",
+      "detail": {
+        "status": "ready",
+        "metrics": 8,
+        "tables": 1
+      }
+    },
+    {
+      "check": "Tab setting persistence",
+      "result": "PASS",
+      "detail": "Horizon remains 12 after leaving and returning"
+    },
+    {
+      "check": "Empty region selection",
+      "result": "PASS",
+      "detail": "Warning shown and KPI cards absent"
+    },
+    {
+      "check": "Upload mode without file",
+      "result": "PASS",
+      "detail": "Prompts for upload; synthetic figures are not substituted"
+    },
+    {
+      "check": "Return to generated sample",
+      "result": "PASS",
+      "detail": "ready"
+    }
+  ],
+  "limitations": [
+    "No browser/DOM or visual layout inspection",
+    "File uploads covered by AppTest, as the agent API declares uploads action_unsupported",
+    "No live AI requests or credentials used"
+  ]
+}

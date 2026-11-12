@@ -1,0 +1,191 @@
+{
+  "python": "3.12.10",
+  "executable": "D:\\study material\\projects\\ai-sales-dashboard\\.venv\\Scripts\\python.exe",
+  "packages": {
+    "pandas": "2.3.3",
+    "numpy": "2.4.6",
+    "statsmodels": "0.15.0",
+    "scikit-learn": "1.9.1",
+    "streamlit": "1.67.0"
+  },
+  "same_environment_deterministic": true,
+  "docs_match_repeated_builds": true,
+  "runs": {
+    "first": {
+      "seconds": 0.266,
+      "hashes": {
+        "case-study.md": "91f93d721c26ef97560e1ad2bdeabd05ec9b77b78800f36ed7f3d096ed5c5886",
+        "case-study.json": "8cb574f0db0dd52e3e4f50750cbb5ca6803ba64b1db0b6fed454db29d1d4f2cc",
+        "demo-preview.svg": "ec0d2c331fa744bd03b8bd60ab37627d569761e369704312e56592f8bcd148de"
+      }
+    },
+    "second": {
+      "seconds": 0.265,
+      "hashes": {
+        "case-study.md": "91f93d721c26ef97560e1ad2bdeabd05ec9b77b78800f36ed7f3d096ed5c5886",
+        "case-study.json": "8cb574f0db0dd52e3e4f50750cbb5ca6803ba64b1db0b6fed454db29d1d4f2cc",
+        "demo-preview.svg": "ec0d2c331fa744bd03b8bd60ab37627d569761e369704312e56592f8bcd148de"
+      }
+    }
+  },
+  "metrics_recomputed_from_source": {
+    "revenue": 91606978.18,
+    "profit": 21945383.769999996,
+    "margin_pct": 23.956017550190513,
+    "orders": 7151,
+    "lines": 7151,
+    "previous_revenue": 71124545.62,
+    "revenue_change_pct": 28.79798019298756
+  },
+  "forecast_evidence": {
+    "method": "Damped-trend Holt-Winters",
+    "history_months": 45,
+    "evaluation": {
+      "holdout_months": 3,
+      "training_months": 42,
+      "baseline_method": "seasonal_naive",
+      "baseline_label": "Seasonal naive (same month last year)",
+      "selected_method": "holt_winters",
+      "hw_mae": 1151109.4928135735,
+      "baseline_mae": 5202720.216666668,
+      "hw_wape": 0.041333150498846054,
+      "baseline_wape": 0.1868152587233503,
+      "selected_mae": 1151109.4928135735,
+      "selected_wape": 0.041333150498846054,
+      "selected_mape": 0.04138986612747766,
+      "improvement_pct": 77.87485306001948,
+      "note": "Last 3 months used for model selection; this is not an independent test score."
+    },
+    "holdout": [
+      {
+        "month": "2026-07",
+        "actual": 25603293.76,
+        "holt_winters": 24428700.616929237,
+        "baseline": 20495535.35,
+        "selected": 24428700.616929237
+      },
+      {
+        "month": "2026-08",
+        "actual": 28593755.47,
+        "holt_winters": 27866024.433342397,
+        "baseline": 24022716.81,
+        "selected": 27866024.433342397
+      },
+      {
+        "month": "2026-09",
+        "actual": 29351589.98,
+        "holt_winters": 27800585.681287646,
+        "baseline": 23422226.4,
+        "selected": 27800585.681287646
+      }
+    ]
+  },
+  "local_links_checked": [
+    {
+      "source": "README.md",
+      "target": "docs/PRD.md"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/SCOPE.md"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/TASKS.md"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/case-study.md"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/demo-preview.svg"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/methods.md"
+    },
+    {
+      "source": "docs\\case-study.md",
+      "target": "case-study.json"
+    },
+    {
+      "source": "docs\\case-study.md",
+      "target": "demo-preview.svg"
+    },
+    {
+      "source": "docs\\PRD.md",
+      "target": "SCOPE.md"
+    },
+    {
+      "source": "docs\\PRD.md",
+      "target": "TASKS.md"
+    },
+    {
+      "source": "docs\\PRD.md",
+      "target": "methods.md"
+    },
+    {
+      "source": "docs\\PRD.md",
+      "target": "TASKS.md"
+    },
+    {
+      "source": "docs\\SCOPE.md",
+      "target": "PRD.md"
+    },
+    {
+      "source": "docs\\SCOPE.md",
+      "target": "TASKS.md"
+    },
+    {
+      "source": "docs\\SCOPE.md",
+      "target": "TASKS.md"
+    },
+    {
+      "source": "docs\\TASKS.md",
+      "target": "PRD.md"
+    },
+    {
+      "source": "docs\\TASKS.md",
+      "target": "SCOPE.md"
+    }
+  ],
+  "checks": [
+    "JSON parse",
+    "SVG XML parse",
+    "synthetic label",
+    "seed",
+    "source metrics exact match",
+    "decision brief exact match",
+    "region delta reconciliation",
+    "product/region revenue reconciliation",
+    "SVG source reconstruction exact match",
+    "local Markdown links exist"
+  ],
+  "build_warnings": [],
+  "commands": [
+    ".venv/Scripts/python.exe scripts/build_case_study.py",
+    ".venv/Scripts/python.exe .venv/phase0-artifact-check/verify_artifacts.py"
+  ],
+  "initial_verifier_attempt": "Failed on exact float equality for regrouped region sums; verification-only script corrected to tolerance < 1e-6 INR. No product code was changed.",
+  "before_hashes": {
+    "case-study.md": "3b4112bf02200c65b8ad2c74533073eacc015c0ef86ea55dc782d2ffe3a1aec6",
+    "case-study.json": "43731aca87edd3a4e8a615a862442484aa6301f0ebc2bb89e4bbb03254e150e1",
+    "demo-preview.svg": "ec0d2c331fa744bd03b8bd60ab37627d569761e369704312e56592f8bcd148de"
+  },
+  "prior_environment_parity": "Markdown and JSON hashes changed; SVG unchanged. Original bytes were not captured, so no exact prior-version numeric-delta claim is made. Same-environment repeatability is checked independently.",
+  "readme_rounded_claims_verified": {
+    "hw_wape_percent": "4.13%",
+    "baseline_wape_percent": "18.68%",
+    "revenue_million": "91.61",
+    "margin_percent": "23.96%"
+  },
+  "warning_assessment": "Zero warnings captured across two builds under NumPy 2.4.6. Default script also completed without emitted warnings. The initial NumPy 2.5.4 run and its 14 warnings remain preserved in initial-artifacts.json.",
+  "initial_evidence": {
+    "path": "docs/evidence/phase-0/initial-artifacts.json",
+    "sha256": "9721036287848f096107dab5c45736eaa6175c87b3f0be915047859ad7be43b2",
+    "numpy_version": "2.5.4"
+  },
+  "parity_with_initial_numpy_2_5_4_artifacts": true,
+  "artifact_scope": "Existing generator and product source executed without edits. Generated docs regenerated; verification script and repeat outputs are under ignored .venv/phase0-artifact-check. No external datasets, API calls, or Phase 1 work."
+}

@@ -1,0 +1,64 @@
+{
+  "recorded_at_ist": "2026-11-12T13:43:35.252172+05:30",
+  "three_builds_identical": true,
+  "duration_seconds": 31.7,
+  "artifact_sha256": {
+    "sql-case-study.md": "c2be11f8cadda227f87ad40f5b36577b1e887c4e5ef12c4a0ced2fb34290d535",
+    "sql-case-study.json": "de92f5ccd2aac2dd78c72b7278c55a1c006cb5bbe8bd32ebba91e740d6a583af",
+    "sql-case-study-charts.svg": "27deed3334d29d645014bd80316abb0ec06d79b16aa2c179675c6a48d7a12618",
+    "sql-case-study-charts.png": "b79de93b6850f4aadd5d35b638e2a2cbadef3b01491c8ec25c38aae74c6581a1"
+  },
+  "scope": {
+    "start_inclusive": "2010-12-01",
+    "end_exclusive": "2011-12-01",
+    "country": null
+  },
+  "summary": {
+    "gross_units": 9655939790,
+    "cancellation_units": 304597420,
+    "net_units": 9351342370,
+    "identified_coverage": 0.85417229180962,
+    "top10_identified_customer_gross_units": 1374968320,
+    "top10_identified_customer_share": 0.16670654985435684
+  },
+  "independent_sql_reconciliation": {
+    "queries_checked": 7,
+    "selected_line_count": 516384,
+    "gross_units": 9655939790,
+    "identified_gross_units": 8247836220,
+    "sales_invoices": 18957,
+    "identified_customers": 4293,
+    "repeat_customers": 2742,
+    "all_queries_match_independent_python": true,
+    "output_rows": {
+      "10_monthly": 12,
+      "20_stock_code_exposure": 3918,
+      "20_country_exposure": 38,
+      "30_stock_code_concentration": 3904,
+      "30_customer_id_concentration": 4293,
+      "40_repeat": 1,
+      "41_purchase_sequence": 17626
+    }
+  },
+  "upstream_sql_and_database_unchanged": true,
+  "png_decodes": true,
+  "svg_parses": true,
+  "chart_visual_review": "Codex inspected generated PNG: both chart panels, dates, GBP scales and labels readable without overlap; not a browser screenshot",
+  "customer_identifiers_or_individual_sequences_exported": false,
+  "findings_trace_to_named_sql": true,
+  "tests_passed": 129,
+  "pytest_seconds": 19.75,
+  "test_exit_code": 0,
+  "test_warnings": 0,
+  "type_check_exit_code": 0,
+  "pip_check": "No broken requirements found",
+  "python": "3.12.10",
+  "packages": {
+    "pandas": "2.3.3",
+    "numpy": "2.4.6",
+    "matplotlib": "3.11.2",
+    "pytest": "9.2.0"
+  },
+  "generator_sha256": "211f8084bd16b12d63aba099292a72abd6dfbb71bd2fc210f5877cd37e887b54",
+  "test_sha256": "3560fe80ce11042a6ac4a391c6b7c02f558d8f376e1881866500061ff586577c"
+}

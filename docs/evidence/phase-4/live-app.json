@@ -1,0 +1,50 @@
+{
+  "checked_at_ist": "2026-11-12T13:23:38.085525+05:30",
+  "method": "Streamlit agent API, running real-data database; semantic inspection only",
+  "checks": [
+    {
+      "scope": {
+        "start_inclusive": "2010-12-01",
+        "end_exclusive": "2011-12-10",
+        "country": null
+      },
+      "metrics_match_accepted_sql": true,
+      "download_scoped_and_redacted": true,
+      "gross_units": 10271433060,
+      "cancellation_units": 478724180
+    },
+    {
+      "scope": {
+        "start_inclusive": "2011-03-01",
+        "end_exclusive": "2011-10-01",
+        "country": "United Kingdom"
+      },
+      "metrics_match_accepted_sql": true,
+      "download_scoped_and_redacted": true,
+      "gross_units": 4300804780,
+      "cancellation_units": 104461720
+    },
+    {
+      "scope": {
+        "start_inclusive": "2011-12-01",
+        "end_exclusive": "2011-12-10",
+        "country": "United Kingdom"
+      },
+      "metrics_match_accepted_sql": true,
+      "download_scoped_and_redacted": true,
+      "gross_units": 572282680,
+      "cancellation_units": 172969190
+    }
+  ],
+  "source_switch_preserves_filters": true,
+  "partial_month_message": true,
+  "returned_to_full_source": true,
+  "manual_visual_review": {
+    "status": "PASS",
+    "reviewer": "User",
+    "response": "Reviewed?looks correct",
+    "recorded_at_ist": "2026-11-12T13:33:20.278047+05:30",
+    "method": "User inspected the running real-data view after being asked to review all four sections and quality/SQL expanders; no agent screenshot is claimed"
+  },
+  "live_provider_calls": false
+}

@@ -1,0 +1,21 @@
+{
+  "recorded_at_ist": "2026-11-12T13:33:20.278047+05:30",
+  "tests_passed": 127,
+  "test_warnings": 0,
+  "pytest_seconds": 33.62,
+  "test_exit_code": 0,
+  "type_check_command": "python -m ty check app.py sales_ai/retail_view.py tests/test_retail_app.py --output-format concise",
+  "type_check_exit_code": 0,
+  "type_checker_version": "0.0.101",
+  "pip_check": "No broken requirements found",
+  "accepted_sql_and_database_unchanged": true,
+  "manual_visual_review": "PASS (user confirmation)",
+  "temporary_agent_server_stopped": true,
+  "phase_5_started": false,
+  "files_sha256": {
+    "app.py": "eb075f7542b94f5a92bd5dc89b899dd93c4ee24f3071042b750c9f7cbf80c722",
+    "sales_ai/retail_view.py": "e97e24079f57a7e47933e7f15068d1f7fbd126d146790576cbd18bf0f09bc6f3",
+    "tests/test_retail_app.py": "b2e7ea7f860923cd58573dfd478494a497b8eef40fff7115fda7c7b6481446e2",
+    "requirements-dev.txt": "900bcf972d296613721cc026cf16cfa552b5689d027621f404781e678d472ff7"
+  }
+}

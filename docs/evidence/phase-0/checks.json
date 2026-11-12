@@ -1,0 +1,20 @@
+[
+  {
+    "command": ".\\.venv\\Scripts\\python.exe -m pip check",
+    "exit_code": 0,
+    "started_at_ist": "2026-11-12T00:17:21.675449+05:30",
+    "finished_at_ist": "2026-11-12T00:17:22.342246+05:30",
+    "duration_seconds": 0.666797,
+    "log": "pip-check.txt"
+  },
+  {
+    "command": ".\\.venv\\Scripts\\python.exe -m pytest -o cache_dir=.venv/phase0-runtime/pytest-cache",
+    "execution_context": "outside filesystem sandbox; project .venv; TEMP/TMP=.venv/phase0-runtime/temp",
+    "exit_code": 0,
+    "tests_passed": 114,
+    "warnings": 0,
+    "pytest_duration_seconds": 12.88,
+    "recorded_at_ist": "2026-11-12T00:21:17.899031+05:30",
+    "log": "pytest.txt"
+  }
+]

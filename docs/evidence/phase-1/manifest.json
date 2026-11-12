@@ -1,0 +1,22 @@
+{
+  "source_url": "https://archive.ics.uci.edu/static/public/352/online%2Bretail.zip",
+  "source_page": "https://archive.ics.uci.edu/dataset/352/online+retail",
+  "attribution": "Chen, D. (2015). Online Retail. UCI. DOI 10.24432/C5BW33",
+  "license": "CC BY 4.0",
+  "recorded_at_utc": "2026-11-11T19:00:38.247779+00:00",
+  "archive_sha256": "f5385cbb54bbebf7196389109c6b0621faab0c304e3702548165e71c84aede8b",
+  "workbook_sha256": "43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d",
+  "worksheet": "Online Retail",
+  "rows": 541909,
+  "schema_version": "1.0",
+  "profile_version": "1.0",
+  "python": "3.12.10",
+  "packages": {
+    "pandas": "2.3.3",
+    "numpy": "2.4.6",
+    "openpyxl": "3.1.5"
+  },
+  "retrieved_at_utc": "2026-11-11T18:58:47.824762+00:00",
+  "retrieval_time_basis": "local downloaded archive modification time",
+  "preparation_policy_version": "1.0"
+}

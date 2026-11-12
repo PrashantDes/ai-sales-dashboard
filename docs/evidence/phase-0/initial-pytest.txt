@@ -1,0 +1,87 @@
+........................................................................ [ 63%]
+..........................................                               [100%]
+============================== warnings summary ===============================
+tests/test_app.py: 31 warnings
+tests/test_review_fixes.py: 6 warnings
+  D:\study material\projects\ai-sales-dashboard\app.py:180: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+    default_start = max(min_d, (pd.Timestamp(max_d) - pd.Timedelta(days=89)).date())
+
+tests/test_app.py: 30 warnings
+tests/test_review_fixes.py: 6 warnings
+  D:\study material\projects\ai-sales-dashboard\app.py:272: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+    span = end - start + pd.Timedelta(days=1)
+
+tests/test_app.py: 14 warnings
+tests/test_core.py: 1 warning
+tests/test_review_fixes.py: 4 warnings
+  D:\study material\projects\ai-sales-dashboard\.venv\Lib\site-packages\pandas\core\resample.py:2359: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+    + Timedelta(days=1, unit=edges_dti.unit).as_unit(edges_dti.unit)
+
+tests/test_app.py: 2 warnings
+tests/test_core.py: 2 warnings
+tests/test_forecast_evaluation.py: 8 warnings
+tests/test_review_fixes.py: 1 warning
+  D:\study material\projects\ai-sales-dashboard\sales_ai\ai.py:155: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+    partial = last_day < month_end - pd.Timedelta(days=3)
+
+tests/test_app.py: 738 warnings
+tests/test_core.py: 18732 warnings
+tests/test_data_quality.py: 138 warnings
+tests/test_review_fixes.py: 21 warnings
+  D:\study material\projects\ai-sales-dashboard\tests\fake_superstore.py:26: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+    "Ship Date": f"{(d + pd.Timedelta(days=4)).month}/{(d + pd.Timedelta(days=4)).day}/{(d + pd.Timedelta(days=4)).year}",
+
+tests/test_data_quality.py::test_short_generator_ranges[1]
+tests/test_data_quality.py::test_short_generator_ranges[5]
+tests/test_data_quality.py::test_short_generator_ranges[65]
+tests/test_data_quality.py::test_short_generator_ranges[70]
+  D:\study material\projects\ai-sales-dashboard\tests\test_data_quality.py:63: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+    frame = generate_sales_data(start=str(start.date()), end=str((start + pd.Timedelta(days=days - 1)).date()))
+
+tests/test_data_quality.py::test_short_generator_ranges[1]
+tests/test_data_quality.py::test_short_generator_ranges[5]
+tests/test_data_quality.py::test_short_generator_ranges[65]
+tests/test_data_quality.py::test_short_generator_ranges[70]
+  D:\study material\projects\ai-sales-dashboard\tests\test_data_quality.py:66: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+    assert frame.date.max() < start + pd.Timedelta(days=days)
+
+.venv\Lib\site-packages\_pytest\cacheprovider.py:487
+  D:\study material\projects\ai-sales-dashboard\.venv\Lib\site-packages\_pytest\cacheprovider.py:487: PytestCacheWarning: could not create cache path D:\study material\projects\ai-sales-dashboard\.pytest_cache\v\cache\nodeids: [WinError 5] Access is denied: 'D:\\study material\\projects\\ai-sales-dashboard\\.pytest_cache\\v\\cache'
+    config.cache.set("cache/nodeids", sorted(str(n) for n in self.cached_nodeids))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+114 passed, 19743 warnings in 13.78s
+
+STDERR:
+Traceback (most recent call last):
+  File "<frozen os>", line 366, in walk
+PermissionError: [WinError 5] Access is denied: 'C:\\Users\\prash\\AppData\\Local\\Temp\\tmpn761xo3w'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\prash\AppData\Local\Programs\Python\Python312\Lib\weakref.py", line 666, in _exitfunc
+    f()
+  File "C:\Users\prash\AppData\Local\Programs\Python\Python312\Lib\weakref.py", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\prash\AppData\Local\Programs\Python\Python312\Lib\tempfile.py", line 939, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+  File "C:\Users\prash\AppData\Local\Programs\Python\Python312\Lib\tempfile.py", line 934, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+  File "C:\Users\prash\AppData\Local\Programs\Python\Python312\Lib\shutil.py", line 781, in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\prash\AppData\Local\Programs\Python\Python312\Lib\shutil.py", line 623, in _rmtree_unsafe
+    for dirpath, dirnames, filenames in results:
+                                        ^^^^^^^
+  File "<frozen os>", line 369, in walk
+  File "C:\Users\prash\AppData\Local\Programs\Python\Python312\Lib\shutil.py", line 621, in onerror
+    onexc(os.scandir, err.filename, err)
+  File "C:\Users\prash\AppData\Local\Programs\Python\Python312\Lib\tempfile.py", line 906, in onexc
+    _resetperms(path)
+  File "C:\Users\prash\AppData\Local\Programs\Python\Python312\Lib\tempfile.py", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+  File "C:\Users\prash\AppData\Local\Programs\Python\Python312\Lib\tempfile.py", line 277, in _dont_follow_symlinks
+    func(path, *args)
+PermissionError: [WinError 5] Access is denied: 'C:\\Users\\prash\\AppData\\Local\\Temp\\tmpn761xo3w'

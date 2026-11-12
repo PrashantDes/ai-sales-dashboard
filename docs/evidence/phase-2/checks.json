@@ -1,0 +1,21 @@
+{
+  "full_data_repeat_identical": true,
+  "second_build_seconds": 165.55,
+  "tests_passed": 119,
+  "pytest_seconds": 26.35,
+  "source_rows": 541909,
+  "row_accounting_matches": true,
+  "signed_units_bridge_matches": true,
+  "database_sha256": "42d043fe02130bd328479becb2ea83de53a9a9a7e720c719dacbf93f74046490",
+  "analytical_sha256": "b21622ae307c7f49b14a9c584e57707a8bd1840b645d0a86d56add24eae1e09d",
+  "recorded_at_ist": "2026-11-12T00:45:12.783066+05:30",
+  "test_exit_code": 0,
+  "dependency_check": "No broken requirements found",
+  "verified_files": {
+    "sales_ai\\retail.py": "b958143598f22cdfe87675acd6bb1d0a76630a79bd847b129b3615f161ecff85",
+    "sql\\online_retail\\00_schema.sql": "c5a106ad6c4a9836a38ebda72078df8ad0d40c14265aff6da828f8c6f11e4cf5",
+    "scripts\\prepare_online_retail.py": "2f01a5ac1b4b37ac9e45c19ccf753348b920bf3756a2a7f5ce39a428a3b9b397",
+    "tests\\test_retail_ingestion.py": "7bee9199003316212a79d70c4d561d7de975a8a010e13d3faf60a9f0f9d21cdc",
+    "docs\\retail-data-contract.md": "42c166a9a7ac3a8d13708cfbbd863c8be766c19e0e407f90acadd29d2f8decf5"
+  }
+}

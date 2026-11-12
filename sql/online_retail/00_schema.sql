@@ -1,0 +1,10 @@
+PRAGMA foreign_keys=ON;
+CREATE TABLE metadata(key TEXT PRIMARY KEY, value TEXT NOT NULL);
+CREATE TABLE staging(source_row INTEGER PRIMARY KEY CHECK(source_row>=2), raw_json TEXT NOT NULL);
+CREATE TABLE invoices(invoice_id TEXT PRIMARY KEY, first_timestamp TEXT NOT NULL, timestamp_conflict INTEGER NOT NULL CHECK(timestamp_conflict IN (0,1)));
+CREATE TABLE lines(source_row INTEGER PRIMARY KEY REFERENCES staging(source_row), invoice_id TEXT, stock_code TEXT, description TEXT, customer_id TEXT, country TEXT, timestamp TEXT, quantity INTEGER, price_units INTEGER, line_units INTEGER, disposition TEXT NOT NULL CHECK(disposition IN ('sale','cancellation','excluded','quarantined')), reason TEXT NOT NULL, flags_json TEXT NOT NULL, duplicate_excess INTEGER NOT NULL CHECK(duplicate_excess IN (0,1)));
+CREATE INDEX lines_invoice ON lines(invoice_id);
+CREATE INDEX lines_date ON lines(timestamp);
+CREATE INDEX lines_stock ON lines(stock_code);
+CREATE INDEX lines_customer ON lines(customer_id);
+CREATE VIEW deduplicated_sensitivity AS SELECT * FROM lines WHERE duplicate_excess=0;

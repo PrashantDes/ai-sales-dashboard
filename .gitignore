@@ -8,3 +8,8 @@ __pycache__/
 data/*.csv
 !data/README.md
 synthetic_superstore.csv
+
+data/raw/
+data/processed/
+*.sqlite
+*.sqlite3

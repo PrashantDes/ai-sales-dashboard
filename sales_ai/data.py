@@ -65,6 +65,8 @@ def generate_sales_data(seed: int = 42, start: str = START_DATE, end: str = END_
     """Return one row per order line with revenue, cost and profit in INR."""
     rng = np.random.default_rng(seed)
     days = pd.date_range(start, end, freq="D")
+    if days.empty:
+        raise ValueError("Start date must be on or before end date.")
     t = (days - days[0]).days.to_numpy() / 365.25
 
     month_mult = days.month.map(MONTH_SEASONALITY).to_numpy()
@@ -72,8 +74,9 @@ def generate_sales_data(seed: int = 42, start: str = START_DATE, end: str = END_
     lam = BASE_ORDERS_PER_DAY * (1 + 0.22 * t) * month_mult * dow_mult
 
     # Inject a handful of abnormal days (promo spikes and outages)
-    n_anom = 8
-    anomaly_idx = rng.choice(np.arange(60, len(days) - 5), size=n_anom, replace=False)
+    candidates = np.arange(60, max(60, len(days) - 5))
+    n_anom = min(8, len(candidates))
+    anomaly_idx = rng.choice(candidates, size=n_anom, replace=False)
     lam[anomaly_idx] *= rng.choice([2.6, 0.25], size=n_anom)
 
     n_orders = rng.poisson(lam)
@@ -130,29 +133,79 @@ def generate_sales_data(seed: int = 42, start: str = START_DATE, end: str = END_
     return df
 
 
-def validate_sales_data(df: pd.DataFrame) -> pd.DataFrame:
-    """Check a user-supplied dataframe, coerce types, and add `profit` if missing.
+def normalize_discounts(values: pd.Series) -> tuple[pd.Series, bool]:
+    """Accept fractions or homogeneous percentages; reject ambiguous mixtures.
 
-    Raises ValueError with a readable message when the schema is wrong.
+    A column entirely in [0, 1] is interpreted as fractions. For percentage
+    columns containing a value above 1, fractional nonzero values are rejected:
+    the app cannot distinguish 0.2% from 20% without an explicit scale.
     """
+    if not np.isfinite(values).all() or (values < 0).any() or (values > 100).any():
+        raise ValueError("Discount must contain finite numbers between 0 and 1 (fractions) or 0 and 100 (percentages).")
+    rescaled = bool((values > 1).any())
+    if rescaled and values.between(0, 1, inclusive="neither").any():
+        raise ValueError("Discount mixes fractions and percentages. Use one scale for the entire column (prefer 0–1).")
+    return (values / 100 if rescaled else values), rescaled
+
+
+def validate_sales_data(df: pd.DataFrame) -> pd.DataFrame:
+    """Validate order lines and attach an audit in ``attrs['cleaning_report']``.
+
+    Invalid dates and missing core numbers are dropped with counts. Invalid
+    ranges, ambiguous discounts and missing IDs fail explicitly; missing
+    grouping labels become Unknown so their revenue stays in grouped totals.
+    """
+    if not df.columns.is_unique:
+        raise ValueError("Column names must be unique.")
     missing = [c for c in REQUIRED_COLUMNS if c not in df.columns]
     if missing:
         raise ValueError(f"Missing required columns: {', '.join(missing)}")
 
     out = df.copy()
-    out["date"] = pd.to_datetime(out["date"], errors="coerce").dt.normalize()
+    steps = [("Rows loaded", f"{len(out):,}")]
+    out["date"] = pd.to_datetime(out["date"], errors="coerce", format="mixed", utc=True).dt.tz_localize(None).dt.normalize()
     for col in ["units", "discount", "revenue", "cost"]:
+        original = out[col]
         out[col] = pd.to_numeric(out[col], errors="coerce")
+        if col == "discount" and (original.notna() & out[col].isna()).any():
+            raise ValueError("Discount contains non-numeric values. Use numbers in a consistent 0–1 or 0–100 scale.")
+        if np.isinf(out[col]).any():
+            raise ValueError(f"{col.capitalize()} must contain finite numbers.")
+    before = len(out)
     out = out.dropna(subset=["date", "revenue", "cost", "units"])
+    steps.append(("Rows with invalid dates or missing core numbers dropped", f"{before - len(out):,}"))
     if out.empty:
         raise ValueError("No valid rows after parsing dates and numbers.")
+    if (out["revenue"] <= 0).any() or (out["cost"] < 0).any():
+        raise ValueError("Revenue must be positive and cost must be non-negative. This dashboard expects sales lines, not returns or credits.")
+    if (out["units"] <= 0).any() or (out["units"] % 1 != 0).any():
+        raise ValueError("Units must be positive whole numbers.")
+    out["units"] = out["units"].astype(int)
+    order_ids = out["order_id"].astype("string").str.strip()
+    if (order_ids.isna() | order_ids.eq("")).any():
+        raise ValueError("Order ID cannot be missing or blank; order counts require an identifier for every row.")
+    out["order_id"] = order_ids.astype(str)
+    missing_labels = 0
+    for col in ["region", "city", "category", "product", "channel", "customer_segment"]:
+        labels = out[col].astype("string").str.strip().replace("", pd.NA)
+        missing_labels += int(labels.isna().sum())
+        out[col] = labels.fillna("Unknown").astype(str)
+    steps.append(("Missing dimension labels filled with Unknown", f"{missing_labels:,}"))
+    steps.append(("Missing discount values filled with zero", f"{out['discount'].isna().sum():,}"))
     out["discount"] = out["discount"].fillna(0)
-    if out["discount"].max() > 1:  # given as percentages (e.g. 10 for 10%)
-        out["discount"] = out["discount"] / 100
+    out["discount"], rescaled = normalize_discounts(out["discount"])
+    steps.append(("Discount scale", "0–100 converted to 0–1" if rescaled else "0–1 fractions"))
     if "profit" in out.columns:
         out["profit"] = pd.to_numeric(out["profit"], errors="coerce")
         if not np.isfinite(out["profit"]).all():
             raise ValueError("Profit must contain a finite number for every valid row.")
+        if not np.isclose(out["profit"], out["revenue"] - out["cost"], atol=0.02, rtol=0).all():
+            raise ValueError("Profit must equal revenue minus cost (within 0.02 for rounding). Remove profit to calculate it automatically.")
+        steps.append(("Profit checked", "Matches revenue minus cost within 0.02"))
     else:
         out["profit"] = out["revenue"] - out["cost"]
-    return out.sort_values("date").reset_index(drop=True)
+        steps.append(("Profit calculated", "revenue minus cost"))
+    steps.append(("Final dataset", f"{len(out):,} lines · {out['order_id'].nunique():,} orders"))
+    out = out.sort_values("date").reset_index(drop=True)
+    out.attrs["cleaning_report"] = [{"Step": step, "Result": result} for step, result in steps]
+    return out

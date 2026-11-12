@@ -1,0 +1,31 @@
+ M .github/workflows/ci.yml
+ M .gitignore
+ M .streamlit/secrets.toml.example
+ M README.md
+ M app.py
+ M data/README.md
+ M requirements-dev.txt
+ M requirements.txt
+ M sales_ai/ai.py
+ M sales_ai/cleaning.py
+ M sales_ai/data.py
+ M tests/test_review_fixes.py
+?? docs/
+?? sales_ai/decisions.py
+?? sales_ai/retail.py
+?? sales_ai/retail_queries.py
+?? sales_ai/retail_view.py
+?? scripts/
+?? sql/
+?? tests/retail_fixture.py
+?? tests/test_ai_reliability.py
+?? tests/test_app.py
+?? tests/test_data_quality.py
+?? tests/test_decisions.py
+?? tests/test_forecast_evaluation.py
+?? tests/test_provider_check.py
+?? tests/test_retail_app.py
+?? tests/test_retail_ingestion.py
+?? tests/test_retail_profile.py
+?? tests/test_retail_sql.py
+?? tests/test_sql_case_study.py

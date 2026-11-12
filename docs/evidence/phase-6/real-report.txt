@@ -1,0 +1,40 @@
+{
+  "scope": {
+    "start_inclusive": "2010-12-01",
+    "end_exclusive": "2011-12-01",
+    "country": null
+  },
+  "summary": {
+    "gross_units": 9655939790,
+    "cancellation_units": 304597420,
+    "net_units": 9351342370,
+    "identified_coverage": 0.85417229180962,
+    "top10_identified_customer_gross_units": 1374968320,
+    "top10_identified_customer_share": 0.16670654985435684
+  },
+  "findings": [
+    {
+      "id": "monthly_peak",
+      "query": "10_monthly.sql",
+      "evidence": "2011-11 has the largest complete-month gross merchandise sales: GBP 1,457,745.53, across 2,751 sales invoices.",
+      "action": "Investigate product/country mix and operational capacity before using this month as a stock-planning benchmark.",
+      "limitation": "One observed annual cycle cannot establish seasonality, promotion effectiveness, stock shortages or the cause of the peak."
+    },
+    {
+      "id": "cancellation_exposure",
+      "query": "20_stock_code_exposure.sql",
+      "evidence": "Product 23166 has the largest cancellation exposure: GBP 77,479.64; gross sales are GBP 81,448.21. Its same-window cancellation-to-sales ratio is 95.1%.",
+      "action": "Review invoice/cancellation records and fulfilment history before deciding whether a process investigation is warranted.",
+      "limitation": "Credits are not matched to original sales and may relate to earlier purchases. This is not a verified return rate or recoverable-savings estimate."
+    },
+    {
+      "id": "identified_repeat",
+      "query": "40_repeat.sql",
+      "supporting_query": "30_customer_id_concentration.sql",
+      "evidence": "2,742 of 4,293 identified purchasers bought on at least two distinct invoices (63.9%). Identified customers cover 85.4% of gross sales. The top 10 identified customer groups contribute 16.7% of identified-customer gross sales.",
+      "action": "Check customer-ID coverage and concentration before proposing a retention pilot; define a control group and predeclared outcome before measuring an intervention.",
+      "limitation": "Within-window repeat purchasing is not lifetime retention. Missing IDs are excluded from customer denominators. No intervention or commercial uplift has been measured."
+    }
+  ]
+}
+

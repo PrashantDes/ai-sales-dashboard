@@ -8,12 +8,14 @@ Supported AI providers
 ----------------------
 * Google    — Gemini models via google-genai SDK.  Get a key at aistudio.google.com
 * Anthropic — Claude models via Anthropic API.  console.anthropic.com
+* Groq      — Groq-hosted text models. console.groq.com
 """
 from __future__ import annotations
 
 import json
 import hashlib
 import os
+import time
 import warnings
 from typing import Iterator, Optional
 
@@ -26,32 +28,30 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 # Provider registry
 # ---------------------------------------------------------------------------
 PROVIDERS: dict[str, dict] = {
+    "groq": {
+        "label": "Groq",
+        "model": "openai/gpt-oss-20b",
+        "env": "GROQ_API_KEY",
+        "model_env": "GROQ_MODEL",
+        "hint": "Create an API key at console.groq.com/keys",
+    },
     "gemini": {
         "label": "Google Gemini",
-        "model": os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
+        "model": "gemini-2.5-flash",
         "env": "GEMINI_API_KEY",
         "model_env": "GEMINI_MODEL",
         "hint": "Free tier available · aistudio.google.com",
     },
     "anthropic": {
         "label": "Anthropic Claude",
-        "model": os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022"),
+        "model": "claude-3-5-sonnet-20241022",
         "env": "ANTHROPIC_API_KEY",
         "model_env": "ANTHROPIC_MODEL",
         "hint": "console.anthropic.com",
     },
 }
 
-# Preferred order of stable, widely supported text models
-GEMINI_PREFERRED_MODELS = [
-    "gemini-2.5-flash",
-    "gemini-2.0-flash",
-    "gemini-1.5-flash",
-    "gemini-2.5-flash-lite",
-    "gemini-2.0-flash-lite",
-    "gemini-3.8-flash",
-]
-
+# Anthropic fallbacks are used only before any output has been emitted.
 ANTHROPIC_PREFERRED_MODELS = [
     "claude-3-5-sonnet-20241022",
     "claude-3-5-haiku-20241022",
@@ -60,7 +60,7 @@ ANTHROPIC_PREFERRED_MODELS = [
 
 # Model availability is account-specific and changes over time. Cache only a
 # SHA-256 key fingerprint (never a plaintext credential) for this process.
-_MODEL_CACHE: dict[tuple[str, str], str] = {}
+_MODEL_CACHE: dict[tuple[str, str, str], str] = {}
 
 
 def _key_fingerprint(api_key: str) -> str:
@@ -84,78 +84,23 @@ def _is_text_generation_model(model: str) -> bool:
     return not any(word in model.lower() for word in blocked)
 
 
-def _configured_model(provider: str) -> str | None:
-    """Return an explicitly configured model, if the deployment set one."""
-    return os.getenv(PROVIDERS[provider]["model_env"]) or None
+def _configured_model(provider: str, model_override: str | None = None) -> str | None:
+    """A per-call deployment setting takes precedence over the environment."""
+    return (model_override or "").strip() or os.getenv(PROVIDERS[provider]["model_env"], "").strip() or None
 
 
-def _select_gemini_model(api_key: str) -> str:
-    preferred = _configured_model("gemini")
-
-    available: list[str] = []
-    try:
-        from google import genai
-
-        client = genai.Client(api_key=api_key)
-        for item in client.models.list(config={"page_size": 100}):
-            actions = {str(action).lower() for action in (item.supported_actions or [])}
-            name = (item.name or "").removeprefix("models/")
-            if "generatecontent" in actions and name and _is_text_generation_model(name):
-                available.append(name)
-    except Exception:
-        available = []
-
-    if preferred:
-        if not available or preferred in available:
-            return preferred
-
-    # Match in priority order against what is actually available for this key
-    for candidate in GEMINI_PREFERRED_MODELS:
-        if candidate in available:
-            return candidate
-
-    if available:
-        # Pick the first available flash model or first text model
-        flash_models = [m for m in available if "flash" in m.lower()]
-        return flash_models[0] if flash_models else available[0]
-
-    return preferred or PROVIDERS["gemini"]["model"]
+def _model_cache_key(provider: str, api_key: str, model_override: str | None = None) -> tuple[str, str, str]:
+    requested = _configured_model(provider, model_override) or PROVIDERS[provider]["model"]
+    return provider, _key_fingerprint(api_key.strip()), requested
 
 
-def _select_anthropic_model(api_key: str) -> str:
-    preferred = _configured_model("anthropic")
-
-    available: list[str] = []
-    try:
-        import anthropic
-
-        client = anthropic.Anthropic(api_key=api_key)
-        page = client.models.list(limit=100)
-        available = [item.id for item in page.data if _is_text_generation_model(item.id)]
-    except Exception:
-        available = []
-
-    if preferred:
-        if not available or preferred in available:
-            return preferred
-
-    for candidate in ANTHROPIC_PREFERRED_MODELS:
-        if candidate in available:
-            return candidate
-
-    if available:
-        return available[0]
-
-    return preferred or PROVIDERS["anthropic"]["model"]
-
-
-def resolve_provider_model(provider: str, api_key: str) -> str:
+def resolve_provider_model(provider: str, api_key: str, model_override: str | None = None) -> str:
     """Choose a fast text model accessible to this specific valid API key."""
-    cache_key = (provider, _key_fingerprint(api_key))
+    cache_key = _model_cache_key(provider, api_key, model_override)
     if cache_key in _MODEL_CACHE:
         return _MODEL_CACHE[cache_key]
 
-    preferred = _configured_model(provider)
+    preferred = _configured_model(provider, model_override)
     if preferred:
         _MODEL_CACHE[cache_key] = preferred
         return preferred
@@ -186,15 +131,25 @@ def _fit_hw(series: pd.Series):
 
 
 def forecast_revenue(df: pd.DataFrame, horizon: int = 6) -> Optional[dict]:
-    """Monthly Holt-Winters revenue forecast with an approximate prediction band.
+    """Compare Holt-Winters with a simple baseline on a chronological holdout.
 
-    Returns None when there is insufficient history.  The current (incomplete)
-    month is excluded from training when data stops more than 3 days before month-end.
+    The last three usable months are validation data used for model selection,
+    not an independent test set. A seasonal naive baseline repeats last year's
+    month when 12 training months exist; otherwise it repeats the last month.
+    The selected method is refitted on all usable months for the forecast.
+
+    The trailing month is excluded when observations end more than three days
+    before month-end. This coverage heuristic cannot distinguish missing sales
+    from a genuinely incomplete export. Unobserved interior months count as zero.
     """
+    if not isinstance(horizon, int) or isinstance(horizon, bool) or horizon < 1:
+        raise ValueError("Forecast horizon must be a positive integer.")
     if df.empty:
         return None
 
     monthly = df.set_index("date")["revenue"].resample("MS").sum()
+    if not np.isfinite(monthly.to_numpy()).all() or (monthly < 0).any():
+        raise ValueError("Monthly revenue must contain finite, nonnegative values.")
     last_day = df["date"].max().normalize()
     month_end = (last_day + pd.offsets.MonthEnd(0)).normalize()
     partial = last_day < month_end - pd.Timedelta(days=3)
@@ -203,34 +158,119 @@ def forecast_revenue(df: pd.DataFrame, horizon: int = 6) -> Optional[dict]:
     if len(monthly) < 6:
         return None
 
-    fit = _fit_hw(monthly)
-    fcst = fit.forecast(horizon).clip(lower=0)
-    sigma = float((monthly - fit.fittedvalues).std())
+    labels = {
+        "holt_winters": "Damped-trend Holt-Winters",
+        "seasonal_naive": "Seasonal naive (same month last year)",
+        "last_month": "Naive (repeat last month)",
+    }
+
+    def baseline(series: pd.Series, count: int, method: str) -> np.ndarray:
+        if method == "seasonal_naive":
+            return np.resize(series.iloc[-12:].to_numpy(), count)
+        return np.repeat(float(series.iloc[-1]), count)
+
+    def scores(actual: np.ndarray, predicted: np.ndarray) -> dict:
+        errors = np.abs(actual - predicted)
+        denominator = float(np.abs(actual).sum())
+        return {
+            "mae": float(errors.mean()),
+            "wape": float(errors.sum() / denominator) if denominator else None,
+            "mape": float(np.mean(errors / actual)) if (actual > 0).all() else None,
+        }
+
+    method, evaluation, holdout = "last_month", None, pd.DataFrame()
+    if len(monthly) >= 9:
+        train, test = monthly.iloc[:-3], monthly.iloc[-3:]
+        baseline_method = "seasonal_naive" if len(train) >= 12 else "last_month"
+        actual = test.to_numpy()
+        base_pred = baseline(train, len(test), baseline_method)
+        base_scores = scores(actual, base_pred)
+        hw_pred = np.full(len(test), np.nan)
+        hw_scores = {"mae": None, "wape": None, "mape": None}
+        note = "Last 3 months used for model selection; this is not an independent test score."
+        try:
+            if (train == 0).all():
+                raise ValueError("All training months have zero revenue.")
+            hw_pred = np.clip(np.asarray(_fit_hw(train).forecast(3)), 0, None)
+            if not np.isfinite(hw_pred).all():
+                raise ValueError("Holt-Winters produced nonfinite predictions.")
+            hw_scores = scores(actual, hw_pred)
+        except (ValueError, RuntimeError, np.linalg.LinAlgError):
+            note += " Holt-Winters could not be fitted reliably; using the baseline."
+        method = (
+            "holt_winters"
+            if hw_scores["mae"] is not None and hw_scores["mae"] < base_scores["mae"]
+            else baseline_method
+        )
+        selected = hw_pred if method == "holt_winters" else base_pred
+        selected_scores = hw_scores if method == "holt_winters" else base_scores
+        evaluation = {
+            "holdout_months": len(test),
+            "training_months": len(train),
+            "baseline_method": baseline_method,
+            "baseline_label": labels[baseline_method],
+            "selected_method": method,
+            "hw_mae": hw_scores["mae"],
+            "baseline_mae": base_scores["mae"],
+            "hw_wape": hw_scores["wape"],
+            "baseline_wape": base_scores["wape"],
+            "selected_mae": selected_scores["mae"],
+            "selected_wape": selected_scores["wape"],
+            "selected_mape": selected_scores["mape"],
+            "improvement_pct": (
+                (base_scores["mae"] - selected_scores["mae"]) / base_scores["mae"] * 100
+                if base_scores["mae"] else None
+            ),
+            "note": note,
+        }
+        holdout = pd.DataFrame(
+            {"actual": actual, "holt_winters": hw_pred, "baseline": base_pred, "selected": selected},
+            index=test.index,
+        )
+
+    fit = None
+    if method == "holt_winters":
+        try:
+            fit = _fit_hw(monthly)
+            values = np.clip(np.asarray(fit.forecast(horizon)), 0, None)
+            if not np.isfinite(values).all():
+                raise ValueError("Holt-Winters produced nonfinite predictions.")
+        except (ValueError, RuntimeError, np.linalg.LinAlgError):
+            fit = None
+            method = evaluation["baseline_method"]
+            evaluation["note"] += " Full-history refit failed; future forecast uses the baseline."
+    if fit is None:
+        values = baseline(monthly, horizon, method)
+    residuals = (
+        monthly - fit.fittedvalues if fit is not None
+        else monthly.diff(12 if method == "seasonal_naive" else 1)
+    )
+    sigma = float(residuals.dropna().std())
+    if not np.isfinite(sigma):
+        sigma = 0.0
     steps = np.arange(1, horizon + 1)
     band = 1.96 * sigma * np.sqrt(1 + 0.25 * (steps - 1))
+    future_index = pd.date_range(monthly.index[-1] + pd.offsets.MonthBegin(1), periods=horizon, freq="MS")
     forecast_df = pd.DataFrame(
         {
-            "forecast": fcst.to_numpy(),
-            "lower": np.clip(fcst.to_numpy() - band, 0, None),
-            "upper": fcst.to_numpy() + band,
+            "forecast": values,
+            "lower": np.clip(values - band, 0, None),
+            "upper": values + band,
         },
-        index=fcst.index,
+        index=future_index,
     )
-
-    backtest_mape = None
-    if len(monthly) >= 27:
-        train, test = monthly.iloc[:-3], monthly.iloc[-3:]
-        pred = _fit_hw(train).forecast(3).clip(lower=0)
-        backtest_mape = float(
-            np.mean(np.abs((test.to_numpy() - pred.to_numpy()) / test.to_numpy()))
-        )
 
     return {
         "history": monthly,
         "forecast": forecast_df,
         "partial_month_excluded": partial,
-        "backtest_mape": backtest_mape,
-        "seasonal": len(monthly) >= 24,
+        "first_month_may_be_partial": df["date"].min().day > 3,
+        "backtest_mape": evaluation["selected_mape"] if evaluation else None,
+        "seasonal": method == "holt_winters" and len(monthly) >= 24 and (monthly > 0).all(),
+        "method": method,
+        "method_label": labels[method],
+        "evaluation": evaluation,
+        "holdout": holdout,
     }
 
 
@@ -312,7 +352,8 @@ def detect_anomalies(df: pd.DataFrame, contamination: float = 0.01) -> pd.DataFr
 # ===========================================================================
 
 def _pct(cur: float, prev: float) -> Optional[float]:
-    return None if not prev else (cur / prev - 1) * 100
+    # Absolute denominator preserves direction when previous profit is a loss.
+    return None if not prev else (cur - prev) / abs(prev) * 100
 
 
 def _totals(d: pd.DataFrame) -> dict:
@@ -461,10 +502,12 @@ def rule_based_summary(facts: dict) -> str:
     md = facts.get("margin_by_discount", {})
     deep = next((k for k in ["over 20%", "10–20%"] if k in md), None)
     if "no discount" in md and deep:
+        movement = "is lower" if md[deep] < md["no discount"] else "is higher" if md[deep] > md["no discount"] else "is unchanged"
         lines.append(
-            f"**Discounting impact:** margin compresses from "
-            f"{md['no discount']:.1f}% on full-price lines to "
-            f"{md[deep]:.1f}% on lines discounted {deep}."
+            f"**Discount comparison:** margin {movement} on discounted lines: "
+            f"{md['no discount']:.1f}% on full-price lines versus "
+            f"{md[deep]:.1f}% on lines discounted {deep}. "
+            "This is an association; product mix and other factors can explain the difference."
         )
 
     if facts.get("anomalies"):
@@ -496,16 +539,39 @@ def _system_prompt(currency: str) -> str:
     )
 
 
+def _gemini_candidates(client, model: str) -> list[str]:
+    """Use advertised text models instead of guessing retired model names."""
+    try:
+        available = []
+        for item in client.models.list(config={"page_size": 100}):
+            name = (item.name or "").removeprefix("models/")
+            actions = {str(a).lower() for a in (item.supported_actions or [])}
+            if name and "generatecontent" in actions and _is_text_generation_model(name):
+                available.append(name)
+        # Limit fallback attempts to keep interactive requests bounded.
+        alternatives = sorted(set(available) - {model}, key=_text_model_rank)[:2]
+        return [model, *alternatives]
+    except Exception:
+        # Metadata failure must not prevent an explicitly configured model working.
+        return [model]
+
+
+def _gemini_retryable(exc: Exception) -> bool:
+    code = getattr(exc, "code", None)
+    return code in (500, 502, 503, 504) or (
+        code is None and any(p in str(exc).lower() for p in _SERVER_PHRASES)
+    )
+
+
 def _call_gemini(api_key: str, model: str, system: str, user: str, max_tokens: int) -> str:
     from google import genai  # lazy import
     from google.genai import errors, types
 
     client = genai.Client(api_key=api_key.strip())
-    candidates = [model] + [m for m in GEMINI_PREFERRED_MODELS if m != model]
-    seen = set()
-    models_to_try = [m for m in candidates if m and not (m in seen or seen.add(m))]
+    models_to_try = _gemini_candidates(client, model)
 
     last_exc = None
+    server_exc = None
     for m in models_to_try:
         for attempt in range(2):
             try:
@@ -529,16 +595,22 @@ def _call_gemini(api_key: str, model: str, system: str, user: str, max_tokens: i
                         return parts_text.strip()
             except errors.ClientError as exc:
                 last_exc = exc
-                msg_str = str(exc).lower()
-                code = getattr(exc, "code", None)
-                # If model is unavailable, not found, or unsupported on this account, try the next model
-                if any(p in msg_str for p in _MODEL_PHRASES) or code in (404, 400) or "not found" in msg_str:
-                    break
-                # Explicit authentication / invalid key error - fail immediately
-                if any(p in msg_str for p in _KEY_PHRASES):
+                msg = str(exc).lower()
+                if any(p in msg for p in _KEY_PHRASES + _QUOTA_PHRASES):
                     raise
-            except (errors.ServerError, Exception) as exc:
+                if getattr(exc, "code", None) == 404 or any(p in msg for p in _MODEL_PHRASES):
+                    break
+                raise
+            except Exception as exc:
                 last_exc = exc
+                if not _gemini_retryable(exc):
+                    raise
+                server_exc = exc
+                if attempt == 0:
+                    time.sleep(1)
+
+    if server_exc:
+        raise server_exc
 
     if last_exc:
         raise last_exc
@@ -552,11 +624,10 @@ def _stream_gemini(
     from google.genai import errors, types
 
     client = genai.Client(api_key=api_key.strip())
-    candidates = [model] + [m for m in GEMINI_PREFERRED_MODELS if m != model]
-    seen = set()
-    models_to_try = [m for m in candidates if m and not (m in seen or seen.add(m))]
+    models_to_try = _gemini_candidates(client, model)
 
     last_exc = None
+    server_exc = None
     for m in models_to_try:
         yielded_any = False
         try:
@@ -580,16 +651,26 @@ def _stream_gemini(
             if yielded_any:
                 raise
             last_exc = exc
-            msg_str = str(exc).lower()
-            code = getattr(exc, "code", None)
-            if any(p in msg_str for p in _MODEL_PHRASES) or code in (404, 400) or "not found" in msg_str:
-                continue
-            if any(p in msg_str for p in _KEY_PHRASES):
+            msg = str(exc).lower()
+            if any(p in msg for p in _KEY_PHRASES + _QUOTA_PHRASES):
                 raise
-        except (errors.ServerError, Exception) as exc:
+            if getattr(exc, "code", None) == 404 or any(p in msg for p in _MODEL_PHRASES):
+                continue
+            raise
+        except Exception as exc:
             if yielded_any:
                 raise
             last_exc = exc
+            if _gemini_retryable(exc):
+                server_exc = exc
+                time.sleep(1)
+            elif any(p in str(exc).lower() for p in _NETWORK_PHRASES):
+                continue
+            else:
+                raise
+
+    if server_exc:
+        raise server_exc
 
     if last_exc:
         raise last_exc
@@ -619,6 +700,8 @@ def _call_anthropic(api_key: str, model: str, system: str, user: str, max_tokens
         except anthropic.AuthenticationError:
             raise
         except Exception as exc:
+            if _auth_or_quota_error(exc):
+                raise
             last_exc = exc
 
     if last_exc:
@@ -654,7 +737,7 @@ def _stream_anthropic(
         except anthropic.AuthenticationError:
             raise
         except Exception as exc:
-            if yielded_any:
+            if yielded_any or _auth_or_quota_error(exc):
                 raise
             last_exc = exc
 
@@ -663,10 +746,107 @@ def _stream_anthropic(
     raise RuntimeError("Anthropic request failed.")
 
 
+def _groq_candidates(client, model: str) -> list[str]:
+    """Fallback only to advertised chat models, never speech or tool systems."""
+    try:
+        blocked = ("whisper", "orpheus", "guard", "compound", "embed", "tts", "audio")
+        available = {
+            item.id for item in client.models.list().data
+            if getattr(item, "active", True) is not False
+            and _is_text_generation_model(item.id)
+            and not any(word in item.id.lower() for word in blocked)
+        }
+        preferred = ["openai/gpt-oss-20b", "openai/gpt-oss-120b"]
+        alternatives = [m for m in preferred if m in available and m != model]
+        alternatives += sorted(available - set(alternatives) - {model})
+        return [model, *alternatives[:2]]
+    except Exception:
+        return [model]
+
+
+def _groq_model_error(exc: Exception) -> bool:
+    # Permission, quota, network and unrelated validation errors must not
+    # trigger requests against different models.
+    return not _auth_or_quota_error(exc) and any(p in str(exc).lower() for p in _MODEL_PHRASES)
+
+
+def _auth_or_quota_error(exc: Exception) -> bool:
+    code = getattr(exc, "status_code", None) or getattr(exc, "code", None)
+    return code in (401, 403, 429) or any(p in str(exc).lower() for p in _KEY_PHRASES + _QUOTA_PHRASES)
+
+
+def _groq_request(model: str, system: str, user: str, max_tokens: int) -> dict:
+    request = dict(
+        model=model,
+        messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+        max_completion_tokens=max_tokens,
+        temperature=0.2,
+    )
+    if model.startswith("openai/gpt-oss-"):
+        # Reasoning consumes the completion budget too. Leave room for the answer.
+        request.update(reasoning_effort="low", include_reasoning=False,
+                       max_completion_tokens=max(2048, max_tokens))
+    return request
+
+
+def _call_groq(api_key: str, model: str, system: str, user: str, max_tokens: int, model_override: str | None = None) -> str:
+    from groq import Groq
+
+    with Groq(api_key=api_key.strip(), timeout=30.0, max_retries=2) as client:
+        last_exc = None
+        for candidate in _groq_candidates(client, model):
+            try:
+                response = client.chat.completions.create(
+                    **_groq_request(candidate, system, user, max_tokens)
+                )
+                text = response.choices[0].message.content if response.choices else None
+                if not text or not text.strip():
+                    raise RuntimeError("Groq returned no text content.")
+                _MODEL_CACHE[_model_cache_key("groq", api_key, model_override)] = candidate
+                return text.strip()
+            except Exception as exc:
+                if not _groq_model_error(exc):
+                    raise
+                last_exc = exc
+        raise last_exc
+
+
+def _stream_groq(
+    api_key: str, model: str, system: str, user: str, max_tokens: int, model_override: str | None = None
+) -> Iterator[str]:
+    from groq import Groq
+
+    with Groq(api_key=api_key.strip(), timeout=30.0, max_retries=2) as client:
+        last_exc = None
+        for candidate in _groq_candidates(client, model):
+            yielded_any = False
+            try:
+                with client.chat.completions.create(
+                    **_groq_request(candidate, system, user, max_tokens), stream=True,
+                ) as stream:
+                    for chunk in stream:
+                        text = chunk.choices[0].delta.content if chunk.choices else None
+                        if text:
+                            yielded_any = True
+                            yield text
+                    if not yielded_any:
+                        raise RuntimeError("Groq returned no text content.")
+                _MODEL_CACHE[_model_cache_key("groq", api_key, model_override)] = candidate
+                return
+            except Exception as exc:
+                if yielded_any or not _groq_model_error(exc):
+                    raise
+                last_exc = exc
+        raise last_exc
+
+
 def _call_llm(
-    provider: str, api_key: str, system: str, user: str, max_tokens: int = 700
+    provider: str, api_key: str, system: str, user: str, max_tokens: int = 700,
+    model_override: str | None = None,
 ) -> str:
-    model = resolve_provider_model(provider, api_key)
+    model = resolve_provider_model(provider, api_key, model_override)
+    if provider == "groq":
+        return _call_groq(api_key, model, system, user, max_tokens, model_override)
     if provider == "gemini":
         return _call_gemini(api_key, model, system, user, max_tokens)
     if provider == "anthropic":
@@ -675,10 +855,13 @@ def _call_llm(
 
 
 def _stream_llm(
-    provider: str, api_key: str, system: str, user: str, max_tokens: int = 700
+    provider: str, api_key: str, system: str, user: str, max_tokens: int = 700,
+    model_override: str | None = None,
 ) -> Iterator[str]:
-    model = resolve_provider_model(provider, api_key)
-    if provider == "gemini":
+    model = resolve_provider_model(provider, api_key, model_override)
+    if provider == "groq":
+        yield from _stream_groq(api_key, model, system, user, max_tokens, model_override)
+    elif provider == "gemini":
         yield from _stream_gemini(api_key, model, system, user, max_tokens)
     elif provider == "anthropic":
         yield from _stream_anthropic(api_key, model, system, user, max_tokens)
@@ -693,6 +876,8 @@ def _stream_llm(
 _KEY_PHRASES = (
     "api key not valid",
     "invalid api key",
+    "invalid_api_key",
+    "invalid x-api-key",
     "api_key_invalid",
     "authentication",
     "unauthorized",
@@ -708,6 +893,8 @@ _MODEL_PHRASES = (
     "not available for api version",
     "is not found for api version",
     "no longer available",
+    "model_decommissioned",
+    "model_not_found",
 )
 _NETWORK_PHRASES = ("connection", "connecterror", "timeout", "dns", "network", "proxy")
 
@@ -718,6 +905,13 @@ def _classify_error(exc: Exception, provider: str) -> str:
     exc_name = type(exc).__name__.lower()
     label = PROVIDERS[provider]["label"]
     hint = PROVIDERS[provider]["hint"]
+
+    if isinstance(exc, ModuleNotFoundError):
+        return (
+            f"**{label} dependency is missing.** "
+            "Run `python -m pip install -r requirements.txt` in the same Python environment "
+            "as the dashboard, then restart it with `python -m streamlit run app.py`."
+        )
 
     if any(p in msg for p in _KEY_PHRASES):
         return (
@@ -738,7 +932,11 @@ def _classify_error(exc: Exception, provider: str) -> str:
     if "servererror" in exc_name or any(p in msg for p in _SERVER_PHRASES):
         return (
             f"**{label} is temporarily unavailable.** "
-            "Please wait a few seconds and retry."
+            "The provider may be overloaded or down; this does not establish whether your key is valid. "
+            "Retry later or switch providers. For summaries, clear your sidebar key to use the local "
+            "rule-based summary (a deployment key must also be unset). "
+            + ("Check https://aistudio.google.com and https://ai.google.dev/gemini-api/docs/troubleshooting."
+               if provider == "gemini" else "Check the provider status page.")
         )
     if any(p in msg for p in _NETWORK_PHRASES):
         return (
@@ -774,6 +972,11 @@ def verify_api_key(provider: str, api_key: str) -> tuple[bool, Optional[str]]:
 
                 with genai.Client(api_key=api_key) as client:
                     next(iter(client.models.list(config={"page_size": 1})), None)
+            elif provider == "groq":
+                from groq import Groq
+
+                with Groq(api_key=api_key, timeout=15.0, max_retries=0) as client:
+                    client.models.list()
             else:
                 import anthropic
 
@@ -808,7 +1011,7 @@ def verify_api_key(provider: str, api_key: str) -> tuple[bool, Optional[str]]:
 
 
 def ai_summary(
-    facts: dict, api_key: Optional[str], provider: str = "gemini"
+    facts: dict, api_key: Optional[str], provider: str = "gemini", model_override: str | None = None
 ) -> tuple[str, str]:
     """Return (markdown_text, source_key) where source_key is a provider key or 'rules'."""
     if not facts:
@@ -831,7 +1034,8 @@ def ai_summary(
     )
     try:
         text = _call_llm(
-            provider, api_key, _system_prompt(facts.get("currency", "₹")), prompt
+            provider, api_key, _system_prompt(facts.get("currency", "₹")), prompt,
+            model_override=model_override,
         )
         return text, provider
     except Exception as exc:
@@ -847,8 +1051,9 @@ def context_tables(df: pd.DataFrame, question: str = "") -> str:
         parts.append(f"SELECTED PERIOD: {df['date'].min():%Y-%m-%d} to {df['date'].max():%Y-%m-%d}")
     query = question.lower()
     dimension_keywords = {
-        "region": ("region", "city", "location", "area"),
-        "category": ("category", "segment", "product type"),
+        "region": ("region", "location", "area"),
+        "city": ("city", "cities"),
+        "category": ("category", "product type"),
         "product": ("product", "item", "sku"),
         "channel": ("channel", "marketplace", "website", "app", "store"),
         "customer_segment": ("customer", "segment", "enterprise", "consumer"),
@@ -862,7 +1067,8 @@ def context_tables(df: pd.DataFrame, question: str = "") -> str:
     if any(word in query for word in ("month", "trend", "growth", "time", "quarter", "year")):
         monthly = df.set_index("date")[["revenue", "profit"]].resample("MS").sum().round(0)
         monthly.index = monthly.index.strftime("%Y-%m")
-        parts.append("MONTHLY REVENUE & PROFIT:\n" + monthly.tail(12).to_csv())
+        parts.append(f"MONTHLY REVENUE & PROFIT (last {min(12, len(monthly))} of {len(monthly)} months; "
+                     f"{max(0, len(monthly) - 12)} earlier months omitted):\n" + monthly.tail(12).to_csv())
 
     for dim in selected:
         g = df.groupby(dim).agg(
@@ -870,10 +1076,19 @@ def context_tables(df: pd.DataFrame, question: str = "") -> str:
             profit=("profit", "sum"),
             orders=("order_id", "nunique"),
             avg_discount=("discount", "mean"),
-        ).round(2)
+        )
+        g["margin_pct"] = g["profit"].div(g["revenue"].replace(0, np.nan)).mul(100)
         g = g.sort_values("revenue", ascending=False)
-        label = f"BY {dim.upper()}" + (" (top 10)" if len(g) > 10 else "")
-        parts.append(f"{label}:\n{g.head(10).to_csv()}")
+        label = f"BY {dim.upper()}" + (f" (top 10 by revenue of {len(g)} groups; {len(g) - 10} omitted)" if len(g) > 10 else " (all groups)")
+        parts.append(f"{label}:\n{g.head(10).round(2).to_csv()}")
+        if len(g) > 10 and any(word in query for word in ("margin", "profitab", "best", "worst")):
+            ranked = g.dropna(subset=["margin_pct"]).sort_values("margin_pct", ascending=False)
+            parts.append(f"HIGHEST MARGIN {dim.upper()} (top 5 ranked across all {len(ranked)} groups with nonzero revenue):\n"
+                         + ranked.head(5).round(2).to_csv())
+            parts.append(f"LOWEST MARGIN {dim.upper()} (bottom 5 ranked across all {len(ranked)} groups with nonzero revenue):\n"
+                         + ranked.tail(5).sort_values("margin_pct").round(2).to_csv())
+            parts.append("Revenue-ranked tables are truncated. Margin rankings cover all nonzero-revenue groups; "
+                         "a high margin on a low-revenue group may have little financial impact.")
 
     return "\n".join(parts)
 
@@ -885,11 +1100,12 @@ def stream_answer_question(
     provider: str = "gemini",
     currency: str = "₹",
     context: Optional[str] = None,
+    model_override: str | None = None,
 ) -> Iterator[str]:
     if not api_key or not api_key.strip():
         yield (
             "Enter a valid API key in the sidebar to enable the Q&A feature. "
-            "Google Gemini offers a generous free tier at aistudio.google.com."
+            "Forecasts, anomaly detection and the local summary work without a key."
         )
         return
 
@@ -907,7 +1123,8 @@ def stream_answer_question(
     )
     try:
         yield from _stream_llm(
-            provider, api_key, _system_prompt(currency), prompt, max_tokens=280
+            provider, api_key, _system_prompt(currency), prompt, max_tokens=280,
+            model_override=model_override,
         )
     except Exception as exc:
         yield _classify_error(exc, provider)
@@ -919,7 +1136,8 @@ def answer_question(
     api_key: Optional[str],
     provider: str = "gemini",
     currency: str = "₹",
+    model_override: str | None = None,
 ) -> str:
     return "".join(
-        stream_answer_question(question, df, api_key, provider, currency)
+        stream_answer_question(question, df, api_key, provider, currency, model_override=model_override)
     )

@@ -1,0 +1,28 @@
+{
+  "recorded_at_ist": "2026-11-12T13:14:59.813508+05:30",
+  "named_queries": 7,
+  "verified_scopes": 4,
+  "rowwise_oracle_matches": true,
+  "phase_2_database_unchanged": true,
+  "database_sha256": "42d043fe02130bd328479becb2ea83de53a9a9a7e720c719dacbf93f74046490",
+  "canonical_monetary_unit": "thousandth of GBP",
+  "customer_identifiers_published": false,
+  "files_sha256": {
+    "sales_ai/retail_queries.py": "0bb2d89bb72afca2df32736e4d3f194a637031cce42bc52420c5738cdf1f76a4",
+    "scripts/verify_retail_sql.py": "9ede001b49ca37e3ec97720aa243e9333ae95f144989279080842d67e1d6b1f9",
+    "tests/test_retail_sql.py": "cb18860141f11bdb2cd9202c200438216dc7652fa670d6acfe097379b1d218d1",
+    "sql/online_retail/00_schema.sql": "c5a106ad6c4a9836a38ebda72078df8ad0d40c14265aff6da828f8c6f11e4cf5",
+    "sql/online_retail/10_monthly.sql": "de54d207f05bb9996e8e1dbeb84f870a747c8ed13b7642f488ee79a21d56405f",
+    "sql/online_retail/20_country_exposure.sql": "3ceb3c414f1d81163e188000cdac88f8454ef6f106c416ce7a37247a5ffa1b5a",
+    "sql/online_retail/20_stock_code_exposure.sql": "c4764fbf503f8193e8f50d8ad4deaab60c4bc6e8f5205cd0457decfcfa35f2f4",
+    "sql/online_retail/30_customer_id_concentration.sql": "f996eb9bd64c555b07aba57bd182bf668d4c24eacd0d2bf10c9ca71d54bb0079",
+    "sql/online_retail/30_stock_code_concentration.sql": "60b1cd6daebb387cce70ef422259abd1ec33055fd4a3bc65752ffe298a496211",
+    "sql/online_retail/40_repeat.sql": "5ed8e83ba85b7b7f99e2dec91ced5ca0736c623c181c95861c69e5f5932baa87",
+    "sql/online_retail/41_purchase_sequence.sql": "477b3435e1784a51cd7b2af65ecdd553a9dbafbfc2e6b124e89215ee470b59f5"
+  },
+  "tests_passed": 122,
+  "pytest_seconds": 33.08,
+  "test_exit_code": 0,
+  "test_warnings": 0,
+  "dependency_check": "No broken requirements found"
+}
